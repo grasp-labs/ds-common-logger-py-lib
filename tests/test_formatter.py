@@ -17,10 +17,10 @@ logger.info("Test message", extra={"user_id": 123})
 """
 
 import io
-import json
 import logging
 import unittest
 from unittest import TestCase
+from unittest.mock import patch
 
 from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
 
@@ -64,26 +64,17 @@ class TestFormatter(TestCase):
     def test_formatter_handles_serialization_error(self) -> None:
         """Test formatter handles non-serializable objects gracefully."""
 
-        # Create an object that can't be JSON serialized
-        class Unserializable:
-            def __str__(self) -> str:
-                return "<Unserializable>"
+        def unserializable_func() -> None:
+            pass
 
-        # Mock json.dumps to raise an error to test error path
-        original_dumps = json.dumps
-
-        def failing_dumps(*args: object, **kwargs: object) -> str:
-            raise TypeError("Cannot serialize")
-
-        json.dumps = failing_dumps
-        try:
-            self.logger.info("Test", extra={"obj": Unserializable()})
+        # Mock json.dumps to raise an error to test error handling path
+        with patch("ds_common_logger_py_lib.formatter.json.dumps", side_effect=TypeError("Cannot serialize")):
+            self.logger.info("Test", extra={"obj": unserializable_func})
             output = self.stream.getvalue()
-            # Should fall back to string representation
+
             self.assertIn("Test", output)
             self.assertIn("extra:", output)
-        finally:
-            json.dumps = original_dumps
+            self.assertIn("obj", output)
 
 
 if __name__ == "__main__":
