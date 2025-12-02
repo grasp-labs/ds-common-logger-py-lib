@@ -174,6 +174,17 @@ class Logger:
         else:
             Logger._active_date_format = Logger.DEFAULT_DATE_FORMAT
 
+        for logger_name in logging.Logger.manager.loggerDict:
+            logger = logging.getLogger(logger_name)
+            for handler in logger.handlers:
+                if isinstance(handler, logging.StreamHandler) and isinstance(handler.formatter, ExtraFieldsFormatter):
+                    handler.setFormatter(
+                        ExtraFieldsFormatter(
+                            fmt=Logger._active_format,
+                            datefmt=Logger._active_date_format,
+                        )
+                    )
+
     @staticmethod
     def get_logger(name: str, level: int | None = None) -> logging.Logger:
         """
@@ -203,14 +214,13 @@ class Logger:
         logger.setLevel(effective_level)
         logger.propagate = False
 
-        for handler in logger.handlers[:]:
-            logger.removeHandler(handler)
+        has_handler = any(
+            isinstance(h.formatter, ExtraFieldsFormatter)
+            for h in logger.handlers
+            if isinstance(h, logging.StreamHandler) and h.formatter
+        )
 
-        logger.addHandler(Logger._create_handler(effective_level))
-
-        for root_handler in root_logger.handlers:
-            if isinstance(root_handler, logging.StreamHandler) and root_handler.stream == sys.stdout:
-                continue
-            logger.addHandler(root_handler)
+        if not has_handler:
+            logger.addHandler(Logger._create_handler(effective_level))
 
         return logger

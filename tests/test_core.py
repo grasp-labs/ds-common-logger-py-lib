@@ -139,16 +139,31 @@ class TestLogging(TestCase):
     def test_set_log_format(self) -> None:
         """Test that set_log_format updates the default format for all loggers."""
         Logger()
+
+        # Create logger first to test updating existing handlers
+        logger = Logger.get_logger("test_format")
+        handler = logger.handlers[0]
+
+        # Add a handler that doesn't match (to cover the False branch)
+        other_logger = logging.getLogger("test_other")
+        other_handler = logging.StreamHandler()
+        other_handler.setFormatter(logging.Formatter("%(message)s"))
+        other_logger.addHandler(other_handler)
+
+        # Now change format - should update existing handler with ExtraFieldsFormatter
+        # but skip the handler with different formatter
         custom_format = "%(levelname)s: %(message)s"
         Logger.set_log_format(custom_format)
 
-        logger = Logger.get_logger("test_format")
-        handler = logger.handlers[0]
         formatter = handler.formatter
-
         self.assertIsNotNone(formatter)
         if formatter is not None:
             self.assertEqual(formatter._fmt, custom_format)
+
+        # Verify other handler was not changed
+        self.assertIsNotNone(other_handler.formatter)
+        if other_handler.formatter is not None:
+            self.assertEqual(other_handler.formatter._fmt, "%(message)s")
 
     def test_set_log_format_reset_to_default(self) -> None:
         """Test that set_log_format resets to default when None is passed."""
