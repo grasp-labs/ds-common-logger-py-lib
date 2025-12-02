@@ -1,0 +1,161 @@
+# Python Package Template
+
+![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)
+[![PyPI version](https://badge.fury.io/py/{{PROJECT_NAME}}.svg?kill_cache=1)](https://badge.fury.io/py/{{PROJECT_NAME}})
+[![Build Status](https://github.com/grasp-labs/{{GITHUB_REPO}}/actions/workflows/build.yaml/badge.svg)](https://github.com/grasp-labs/{{GITHUB_REPO}}/actions/workflows/build.yaml)
+[![codecov](https://codecov.io/gh/grasp-labs/{{GITHUB_REPO}}/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/{{GITHUB_REPO}})
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+A production-ready Python package template for creating well-structured, maintainable Python libraries with comprehensive tooling, testing, and documentation support.
+
+## Quick Start
+
+This is a template repository. To use it:
+
+1. **Replace template variables**: See [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) for all variables that need to be replaced
+2. **Follow the setup guide**: See [SETUP.md](SETUP.md) for detailed setup instructions
+3. **Use the checklist**: See [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) for a quick reference
+
+### Quick Setup
+
+```shell
+# 1. Replace all template variables (see TEMPLATE_VARIABLES.md)
+# 2. Rename the source directory
+mv src/ds_common_{name}_py_lib src/{{PYTHON_MODULE_NAME}}
+
+# 3. Install dependencies
+uv sync --all-extras --dev
+
+# 4. Install pre-commit hooks
+uv run pre-commit install
+
+# 5. Verify setup
+make test
+```
+
+## Development
+
+### Available Commands
+
+Use the Makefile for all development tasks:
+
+```shell
+# Show all available commands
+make help
+
+# Code Quality
+make lint           # Check code quality with ruff
+make format         # Format code with black and ruff
+make type-check     # Run mypy type checking
+make security-check # Run security checks with bandit
+
+# Testing
+make test          # Run tests
+make test-cov      # Run tests with coverage (requires 95%)
+
+# Build and Publish
+make build         # Build package
+make docs          # Build documentation
+make publish-test  # Upload to TestPyPI
+make publish       # Upload to PyPI
+```
+
+### Version Management
+
+```shell
+# Show current version
+make version
+
+# Tag and release
+make tag           # Create git tag and push (triggers release)
+```
+
+> **⚠️ Warning**: The `make tag` command will create a git tag and push it to the remote repository, which may trigger automated releases. Ensure you have updated `VERSION.txt` and committed all changes before running this command.
+
+### Pre-commit Hooks
+
+This project uses pre-commit hooks to ensure code quality:
+
+```shell
+# Install pre-commit hooks
+uv run pre-commit install
+
+# Run hooks manually on all files
+uv run pre-commit run --all-files
+```
+
+### Building Documentation
+
+```shell
+# Build documentation
+make docs
+
+# View documentation (macOS)
+open docs/build/html/index.html
+
+# View documentation (Linux)
+xdg-open docs/build/html/index.html
+```
+
+### Testing
+
+```shell
+# Run basic tests
+make test
+
+# Run tests with coverage (requires 95% coverage)
+make test-cov
+
+# Run specific test file
+uv run pytest tests/test_example.py -v
+```
+
+## Project Structure
+
+```text
+.
+├── .github/
+│   ├── workflows/            # CI/CD workflows
+│   └── CODEOWNERS            # Code ownership file
+├── src/
+│   └── ds_common_{name}_py_lib/     # Rename to your module name
+│       └── __init__.py
+├── .pre-commit-config.yaml   # Pre-commit hooks configuration
+├── tests/                    # Test files
+├── docs/                     # Sphinx documentation
+├── pyproject.toml            # Project configuration
+├── Makefile                  # Development commands
+├── VERSION.txt               # Version file
+├── codecov.yaml              # Codecov configuration
+├── CONTRIBUTING.md           # Contribution guidelines
+├── SETUP.md                  # Setup instructions
+├── PyPI.md                   # PyPI publishing guide
+```
+
+## Features
+
+- **Modern Python Tooling**: Uses `uv` for fast dependency management
+- **Type Safety**: Strict mypy configuration with full type hints
+- **Code Quality**: Ruff for linting, Black for formatting
+- **Testing**: Pytest with 95% coverage requirement
+- **Documentation**: Sphinx with autoapi for automatic API docs
+- **CI/CD**: GitHub Actions for testing, building, and publishing
+- **Pre-commit Hooks**: Automated code quality checks
+- **Docker Support**: Containerized build environment
+
+## Requirements
+
+- Python 3.9+
+- [uv](https://github.com/astral-sh/uv) package manager
+- Make (for development commands)
+
+## Documentation
+
+- [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) - Template variable reference
+- [SETUP.md](SETUP.md) - Detailed setup guide
+- [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) - Quick setup checklist
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+
+## License
+
+This package is licensed under the MIT License. See [LICENSE](LICENSE) for details.

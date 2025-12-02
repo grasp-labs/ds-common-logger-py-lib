@@ -1,0 +1,178 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "{{PROJECT_NAME}}"
+dynamic = ["version"]
+description = "A Python package from the ds-common library collection"
+dependencies = []
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+keywords = ["ds", "common", "python"]
+authors = [
+    {name = "{{AUTHOR_NAME}}", email = "{{AUTHOR_EMAIL}}"}
+]
+maintainers = [
+    {name = "{{AUTHOR_NAME}}", email = "{{AUTHOR_EMAIL}}"}
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: System :: Logging",
+]
+readme = "PyPI.md"
+
+[project.urls]
+Documentation = "https://grasp-labs.github.io/{{GITHUB_REPO}}/"
+Repository = "https://github.com/grasp-labs/{{GITHUB_REPO}}/"
+Issues = "https://github.com/grasp-labs/{{GITHUB_REPO}}/issues/"
+Changelog = "https://github.com/grasp-labs/{{GITHUB_REPO}}/releases"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.8",
+    "black>=23.0.0",
+    "mypy>=1.7.0",
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+    "pre-commit>=3.6.0",
+    "build>=1.0.0",
+    "twine>=4.0.0",
+    "sphinx>=7.1.0",
+    "sphinx-autoapi>=3.0.0",
+    "sphinx-material>=0.0.35",
+]
+test = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.3.0",
+]
+docs = [
+    "sphinx>=7.1.0",
+    "sphinx-autoapi>=3.0.0",
+    "sphinx-material>=0.0.35",
+]
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION.txt"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+# Ruff configuration
+[tool.ruff]
+target-version = "py39"
+line-length = 131
+fix = true
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "ARG", # flake8-unused-arguments
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking
+    "PTH", # flake8-use-pathlib
+    "ERA", # eradicate
+    "PL",  # pylint
+    "RUF", # ruff-specific rules
+]
+ignore = [
+    "E501",    # line too long (handled by black)
+    "PLR0913", # too many arguments
+    "PLR0911", # too many return statements
+    "PLR2004", # magic value used in comparison
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*" = ["PLR2004", "S101", "ARG", "FBT"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["{{PYTHON_MODULE_NAME}}"]
+
+# Black configuration
+[tool.black]
+line-length = 131
+target-version = ["py39", "py310", "py311", "py312"]
+include = '\.pyi?$'
+
+# MyPy configuration
+[tool.mypy]
+python_version = "3.9"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false
+
+# Pytest configuration
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "--cov={{PYTHON_MODULE_NAME}}",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+    "--cov-fail-under=95",
+]
+testpaths = ["tests"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["src"]
+branch = true
+omit = [
+    "tests/*",
+    "*/tests/*",
+    "*/__pycache__/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
