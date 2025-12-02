@@ -138,9 +138,9 @@ for more information.
 
 ## License
 
-This package is licensed under the MIT License.
+This package is licensed under the Apache License 2.0.
 See the
-[LICENSE](https://github.com/grasp-labs/ds-common-logger-py-lib/blob/main/LICENSE)
+[LICENSE-APACHE](https://github.com/grasp-labs/ds-common-logger-py-lib/blob/main/LICENSE-APACHE)
 file for details.
 
 ## Support
