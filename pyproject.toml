@@ -8,7 +8,8 @@ dynamic = ["version"]
 description = "A Python package from the ds-common library collection"
 dependencies = []
 requires-python = ">=3.9"
-license = { file = "LICENSE" }
+license = "Apache-2.0"
+license-files = ["LICENSE-APACHE"]
 keywords = ["ds", "common", "python"]
 authors = [
     {name = "Grasp Labs AS", email = "hello@grasplabs.com"}
@@ -23,7 +24,6 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Libraries :: Python Modules",

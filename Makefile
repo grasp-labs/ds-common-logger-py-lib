@@ -72,7 +72,7 @@ build: clean ## Build the package
 .PHONY: publish-test
 publish-test: build ## Upload to TestPyPI
 	@echo "Uploading to TestPyPI..."
-	uv run twine upload --repository testpypi dist/* --verbose
+	uv run twine upload --repository testpypi --config-file .pypirc dist/* --verbose
 
 .PHONY: publish
 publish: build ## Upload to PyPI
