@@ -15,8 +15,8 @@ Thank you for your interest in contributing! This document provides guidelines a
 2. **Clone your fork**:
 
    ```bash
-   git clone https://github.com/your-username/{{GITHUB_REPO}}.git
-   cd {{GITHUB_REPO}}
+   git clone https://github.com/your-username/ds-common-logger-py-lib.git
+   cd ds-common-logger-py-lib
    ```
 
 3. **Set up development environment**:
@@ -167,7 +167,7 @@ Description: Tests for example module
 """
 
 import pytest
-from {{PYTHON_MODULE_NAME}}.example import example_function
+from ds_common_logger_py_lib.example import example_function
 
 
 def test_example_function_basic() -> None:

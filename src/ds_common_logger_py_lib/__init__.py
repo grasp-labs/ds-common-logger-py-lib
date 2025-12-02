@@ -2,13 +2,13 @@
 A Python package from the ds-common library collection.
 
 **File:** ``__init__.py``
-**Region:** ``{{GITHUB_REPO}}``
+**Region:** ``ds-common-logger-py-lib``
 
 Example:
 
 .. code-block:: python
 
-    from {{PYTHON_MODULE_NAME}} import __version__
+    from ds_common_logger_py_lib import __version__
 
     print(f"Package version: {__version__}")
 """

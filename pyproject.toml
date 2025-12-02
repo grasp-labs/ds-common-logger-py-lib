@@ -3,7 +3,7 @@ requires = ["setuptools>=64", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "{{PROJECT_NAME}}"
+name = "ds-common-logger-py-lib"
 dynamic = ["version"]
 description = "A Python package from the ds-common library collection"
 dependencies = []
@@ -11,10 +11,10 @@ requires-python = ">=3.9"
 license = { file = "LICENSE" }
 keywords = ["ds", "common", "python"]
 authors = [
-    {name = "{{AUTHOR_NAME}}", email = "{{AUTHOR_EMAIL}}"}
+    {name = "Grasp Labs AS", email = "hello@grasplabs.com"}
 ]
 maintainers = [
-    {name = "{{AUTHOR_NAME}}", email = "{{AUTHOR_EMAIL}}"}
+    {name = "Grasp Labs AS", email = "hello@grasplabs.com"}
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -32,10 +32,10 @@ classifiers = [
 readme = "PyPI.md"
 
 [project.urls]
-Documentation = "https://grasp-labs.github.io/{{GITHUB_REPO}}/"
-Repository = "https://github.com/grasp-labs/{{GITHUB_REPO}}/"
-Issues = "https://github.com/grasp-labs/{{GITHUB_REPO}}/issues/"
-Changelog = "https://github.com/grasp-labs/{{GITHUB_REPO}}/releases"
+Documentation = "https://grasp-labs.github.io/ds-common-logger-py-lib/"
+Repository = "https://github.com/grasp-labs/ds-common-logger-py-lib/"
+Issues = "https://github.com/grasp-labs/ds-common-logger-py-lib/issues/"
+Changelog = "https://github.com/grasp-labs/ds-common-logger-py-lib/releases"
 
 [project.optional-dependencies]
 dev = [
@@ -106,7 +106,7 @@ ignore = [
 "tests/**/*" = ["PLR2004", "S101", "ARG", "FBT"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["{{PYTHON_MODULE_NAME}}"]
+known-first-party = ["ds_common_logger_py_lib"]
 
 # Black configuration
 [tool.black]
@@ -141,7 +141,7 @@ minversion = "7.0"
 addopts = [
     "--strict-markers",
     "--strict-config",
-    "--cov={{PYTHON_MODULE_NAME}}",
+    "--cov=ds_common_logger_py_lib",
     "--cov-report=term-missing",
     "--cov-report=html",
     "--cov-report=xml",

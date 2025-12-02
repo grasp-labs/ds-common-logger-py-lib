@@ -1,9 +1,9 @@
 # Python Package Template
 
 ![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)
-[![PyPI version](https://badge.fury.io/py/{{PROJECT_NAME}}.svg?kill_cache=1)](https://badge.fury.io/py/{{PROJECT_NAME}})
-[![Build Status](https://github.com/grasp-labs/{{GITHUB_REPO}}/actions/workflows/build.yaml/badge.svg)](https://github.com/grasp-labs/{{GITHUB_REPO}}/actions/workflows/build.yaml)
-[![codecov](https://codecov.io/gh/grasp-labs/{{GITHUB_REPO}}/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/{{GITHUB_REPO}})
+[![PyPI version](https://badge.fury.io/py/ds-common-logger-py-lib.svg?kill_cache=1)](https://badge.fury.io/py/ds-common-logger-py-lib)
+[![Build Status](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml/badge.svg)](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml)
+[![codecov](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A production-ready Python package template for creating well-structured, maintainable Python libraries with comprehensive tooling, testing, and documentation support.
@@ -21,7 +21,7 @@ This is a template repository. To use it:
 ```shell
 # 1. Replace all template variables (see TEMPLATE_VARIABLES.md)
 # 2. Rename the source directory
-mv src/ds_common_{name}_py_lib src/{{PYTHON_MODULE_NAME}}
+mv src/ds_common_{name}_py_lib src/ds_common_logger_py_lib
 
 # 3. Install dependencies
 uv sync --all-extras --dev
