@@ -122,6 +122,27 @@ class TestLoggingMixin(TestCase):
         logger = TestService.logger(level=logging.DEBUG)
         self.assertEqual(logger.level, logging.DEBUG)
 
+    def test_mixin_logger_with_level_override_subsequent_calls(self) -> None:
+        """Test that logger() method updates level on subsequent calls."""
+
+        class TestService(LoggingMixin):
+            log_level = logging.INFO
+
+        # First call with DEBUG level
+        logger1 = TestService.logger(level=logging.DEBUG)
+        self.assertEqual(logger1.level, logging.DEBUG)
+
+        # Second call with WARNING level - should update the cached logger
+        logger2 = TestService.logger(level=logging.WARNING)
+        self.assertIs(logger1, logger2)
+        self.assertEqual(logger2.level, logging.WARNING)
+        self.assertEqual(logger1.level, logging.WARNING)
+
+        # Third call with ERROR level - should update again
+        logger3 = TestService.logger(level=logging.ERROR)
+        self.assertIs(logger1, logger3)
+        self.assertEqual(logger3.level, logging.ERROR)
+
     def test_mixin_inheritance(self) -> None:
         """Test LoggingMixin with class inheritance."""
 

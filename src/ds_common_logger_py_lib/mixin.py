@@ -107,6 +107,11 @@ class LoggingMixin:
             logger_name = f"{cls.__module__}.{cls.__name__}"
             effective_level = level or cls.log_level
             cls._loggers[cls] = Logger.get_logger(logger_name, effective_level)
+        elif level is not None:
+            logger = cls._loggers[cls]
+            logger.setLevel(level)
+            for handler in logger.handlers:
+                handler.setLevel(level)
         return cls._loggers[cls]
 
     @property
