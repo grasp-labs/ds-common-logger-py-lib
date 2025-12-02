@@ -15,6 +15,9 @@ class MyClass(LoggingMixin):
 
 instance = MyClass()
 instance.log.info("Hello, world!")
+
+# Set format dynamically
+MyClass.set_log_format("%(levelname)s: %(message)s")
 """
 
 import logging
@@ -85,6 +88,31 @@ class LoggingMixin:
             logger.setLevel(level)
             for handler in logger.handlers:
                 handler.setLevel(level)
+
+    @classmethod
+    def set_log_format(
+        cls,
+        format_string: Optional[str] = None,
+        date_format: Optional[str] = None,
+    ) -> None:
+        """
+        Set or update the log format for all loggers.
+
+        This calls Logger.set_log_format() and recreates existing loggers.
+
+        Args:
+            format_string: Format string to set. If None, resets to default format.
+            date_format: Date format string to set. If None, resets to default date format.
+
+        Example:
+            >>> class MyClass(LoggingMixin):
+            ...     pass
+            >>> MyClass.set_log_format("%(levelname)s: %(message)s")
+            >>> MyClass.logger().info("This will use the custom format")
+        """
+        Logger.set_log_format(format_string, date_format)
+        if cls in cls._loggers:
+            del cls._loggers[cls]
 
     @classmethod
     def _get_logger(cls, level: Optional[int] = None) -> logging.Logger:

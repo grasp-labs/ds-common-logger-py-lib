@@ -175,6 +175,49 @@ class TestLoggingMixin(TestCase):
         self.assertEqual(base.log.level, logging.INFO)
         self.assertEqual(debug.log.level, logging.DEBUG)
 
+    def test_mixin_set_log_format(self) -> None:
+        """Test that set_log_format updates the format for all loggers."""
+
+        class TestService(LoggingMixin):
+            pass
+
+        custom_format = "%(levelname)s: %(message)s"
+        TestService.set_log_format(custom_format)
+
+        service = TestService()
+        handler = service.log.handlers[0]
+        formatter = handler.formatter
+
+        self.assertIsNotNone(formatter)
+        if formatter is not None:
+            self.assertEqual(formatter._fmt, custom_format)
+
+    def test_mixin_set_log_format_recreates_existing_logger(self) -> None:
+        """Test that set_log_format recreates logger when it already exists."""
+
+        class TestService(LoggingMixin):
+            pass
+
+        # Create logger first
+        _ = TestService().log
+        self.assertIn(TestService, LoggingMixin._loggers)
+
+        # Set format - should delete and recreate logger (line 115 coverage)
+        custom_format = "%(levelname)s: %(message)s"
+        TestService.set_log_format(custom_format)
+
+        # Verify logger was removed from cache
+        self.assertNotIn(TestService, LoggingMixin._loggers)
+
+        # Logger should be recreated with new format
+        logger2 = TestService().log
+        handler = logger2.handlers[0]
+        formatter = handler.formatter
+
+        self.assertIsNotNone(formatter)
+        if formatter is not None:
+            self.assertEqual(formatter._fmt, custom_format)
+
 
 if __name__ == "__main__":
     unittest.main()

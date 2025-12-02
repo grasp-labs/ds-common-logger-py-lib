@@ -25,6 +25,7 @@ uv pip install ds-common-logger-py-lib
 - **Per-Class Isolation**: Each class gets its own logger instance
   with distinct names
 - **Flexible Configuration**: Set log levels at class level, instance level, or per-call
+- **Customizable Format**: Override default log format using `set_log_format()` method
 - **Custom Formatter**: Includes extra fields in JSON format for better log parsing
 - **Standard Library Compatible**: Built on Python's `logging` module
 

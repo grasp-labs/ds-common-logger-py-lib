@@ -136,6 +136,52 @@ class TestLogging(TestCase):
         # Should have our console handler + the file handler
         self.assertGreaterEqual(len(logger.handlers), 1)
 
+    def test_set_log_format(self) -> None:
+        """Test that set_log_format updates the default format for all loggers."""
+        Logger()
+        custom_format = "%(levelname)s: %(message)s"
+        Logger.set_log_format(custom_format)
+
+        logger = Logger.get_logger("test_format")
+        handler = logger.handlers[0]
+        formatter = handler.formatter
+
+        self.assertIsNotNone(formatter)
+        if formatter is not None:
+            self.assertEqual(formatter._fmt, custom_format)
+
+    def test_set_log_format_reset_to_default(self) -> None:
+        """Test that set_log_format resets to default when None is passed."""
+        Logger()
+        custom_format = "%(levelname)s: %(message)s"
+        Logger.set_log_format(custom_format)
+
+        # Reset format to default
+        Logger.set_log_format(None, None)
+
+        logger = Logger.get_logger("test_reset")
+        handler = logger.handlers[0]
+        formatter = handler.formatter
+
+        self.assertIsNotNone(formatter)
+        if formatter is not None:
+            self.assertEqual(formatter._fmt, Logger.DEFAULT_FORMAT)
+            self.assertEqual(formatter.datefmt, Logger.DEFAULT_DATE_FORMAT)
+
+    def test_set_log_format_with_date_format(self) -> None:
+        """Test that set_log_format can set date_format separately."""
+        Logger()
+        custom_date_format = "%Y-%m-%d"
+        Logger.set_log_format(None, custom_date_format)
+
+        logger = Logger.get_logger("test_date_format")
+        handler = logger.handlers[0]
+        formatter = handler.formatter
+
+        self.assertIsNotNone(formatter)
+        if formatter is not None:
+            self.assertEqual(formatter.datefmt, custom_date_format)
+
 
 if __name__ == "__main__":
     unittest.main()
