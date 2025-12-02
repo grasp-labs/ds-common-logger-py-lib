@@ -12,9 +12,11 @@ logger = Logger.get_logger(__name__)
 logger.info("Hello, world!")
 """
 
+from __future__ import annotations
+
 import logging
 import sys
-from typing import Any, Optional
+from typing import Any
 
 from .formatter import ExtraFieldsFormatter
 
@@ -49,7 +51,7 @@ class Logger:
     def __init__(
         self,
         level: int = logging.INFO,
-        format_string: Optional[str] = None,
+        format_string: str | None = None,
         **kwargs: Any,
     ) -> None:
         """
@@ -124,7 +126,7 @@ class Logger:
         return handler
 
     @staticmethod
-    def get_logger(name: str, level: Optional[int] = None) -> logging.Logger:
+    def get_logger(name: str, level: int | None = None) -> logging.Logger:
         """
         Get a configured logger instance.
 
