@@ -4,17 +4,23 @@
 [![PyPI version](https://badge.fury.io/py/ds-common-logger-py-lib.svg?kill_cache=1)](https://badge.fury.io/py/ds-common-logger-py-lib)
 [![Build Status](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml/badge.svg)](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml)
 [![codecov](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A production-ready Python package template for creating well-structured, maintainable Python libraries with comprehensive tooling, testing, and documentation support.
+A production-ready Python package template for creating
+well-structured, maintainable Python libraries with comprehensive
+tooling, testing, and documentation support.
 
 ## Quick Start
 
 This is a template repository. To use it:
 
-1. **Replace template variables**: See [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) for all variables that need to be replaced
+1. **Replace template variables**: See
+   [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) for all variables
+   that need to be replaced
 2. **Follow the setup guide**: See [SETUP.md](SETUP.md) for detailed setup instructions
-3. **Use the checklist**: See [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) for a quick reference
+3. **Use the checklist**: See
+   [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) for a quick
+   reference
 
 ### Quick Setup
 
@@ -70,7 +76,10 @@ make version
 make tag           # Create git tag and push (triggers release)
 ```
 
-> **⚠️ Warning**: The `make tag` command will create a git tag and push it to the remote repository, which may trigger automated releases. Ensure you have updated `VERSION.txt` and committed all changes before running this command.
+> **⚠️ Warning**: The `make tag` command will create a git tag and
+> push it to the remote repository, which may trigger automated
+> releases. Ensure you have updated `VERSION.txt` and committed all
+> changes before running this command.
 
 ### Pre-commit Hooks
 
@@ -119,7 +128,10 @@ uv run pytest tests/test_example.py -v
 │   └── CODEOWNERS            # Code ownership file
 ├── src/
 │   └── ds_common_{name}_py_lib/     # Rename to your module name
-│       └── __init__.py
+│       ├── core.py                  # Logger class
+│       ├── formatter.py             # ExtraFieldsFormatter class
+│       ├── mixin.py                 # LoggingMixin class
+│       └── __init__.py              # Package initialization
 ├── .pre-commit-config.yaml   # Pre-commit hooks configuration
 ├── tests/                    # Test files
 ├── docs/                     # Sphinx documentation
@@ -158,4 +170,5 @@ uv run pytest tests/test_example.py -v
 
 ## License
 
-This package is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This package is licensed under the Apache License 2.0. See
+[LICENSE-APACHE](LICENSE-APACHE) for details.
