@@ -186,7 +186,10 @@ class Logger:
                     )
 
     @staticmethod
-    def get_logger(name: str, level: int | None = None) -> logging.Logger:
+    def get_logger(
+        name: str,
+        level: int | None = None,
+    ) -> logging.Logger:
         """
         Get a configured logger instance.
 

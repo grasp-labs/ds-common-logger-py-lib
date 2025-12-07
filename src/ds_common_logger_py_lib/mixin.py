@@ -20,8 +20,10 @@ instance.log.info("Hello, world!")
 MyClass.set_log_format("%(levelname)s: %(message)s")
 """
 
+from __future__ import annotations
+
 import logging
-from typing import ClassVar, Optional
+from typing import ClassVar
 
 from .core import Logger
 
@@ -45,11 +47,11 @@ class LoggingMixin:
         >>> instance.log.info("Test message")
     """
 
-    _loggers: ClassVar[dict[type, logging.Logger]] = {}
-    log_level: Optional[int] = None
+    _loggers: ClassVar[dict[type[LoggingMixin], logging.Logger]] = {}
+    log_level: int | None = None
 
     @classmethod
-    def logger(cls, level: Optional[int] = None) -> logging.Logger:
+    def logger(cls, level: int | None = None) -> logging.Logger:
         """
         Get the class logger instance.
 
@@ -92,8 +94,8 @@ class LoggingMixin:
     @classmethod
     def set_log_format(
         cls,
-        format_string: Optional[str] = None,
-        date_format: Optional[str] = None,
+        format_string: str | None = None,
+        date_format: str | None = None,
     ) -> None:
         """
         Set or update the log format for all loggers.
@@ -115,7 +117,7 @@ class LoggingMixin:
             del cls._loggers[cls]
 
     @classmethod
-    def _get_logger(cls, level: Optional[int] = None) -> logging.Logger:
+    def _get_logger(cls, level: int | None = None) -> logging.Logger:
         """
         Get or create the logger for this class.
 
