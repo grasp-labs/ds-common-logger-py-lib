@@ -1,4 +1,4 @@
-# Python Package Template
+# DS Common Logger Python Library
 
 ![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)
 [![PyPI version](https://badge.fury.io/py/ds-common-logger-py-lib.svg?kill_cache=1)](https://badge.fury.io/py/ds-common-logger-py-lib)
@@ -6,37 +6,15 @@
 [![codecov](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A production-ready Python package template for creating
-well-structured, maintainable Python libraries with comprehensive
-tooling, testing, and documentation support.
+A Python logging library from the ds-common library collection,
+providing structured logging with support for extra fields,
+class-based loggers, and flexible configuration.
 
 ## Quick Start
 
-This is a template repository. To use it:
-
-1. **Replace template variables**: See
-   [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) for all variables
-   that need to be replaced
-2. **Follow the setup guide**: See [SETUP.md](SETUP.md) for detailed setup instructions
-3. **Use the checklist**: See
-   [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) for a quick
-   reference
-
-### Quick Setup
-
-```shell
-# 1. Replace all template variables (see TEMPLATE_VARIABLES.md)
-# 2. Rename the source directory
-mv src/ds_common_{name}_py_lib src/ds_common_logger_py_lib
-
-# 3. Install dependencies
+```bash
+install pre-commit
 uv sync --all-extras --dev
-
-# 4. Install pre-commit hooks
-uv run pre-commit install
-
-# 5. Verify setup
-make test
 ```
 
 ## Development
