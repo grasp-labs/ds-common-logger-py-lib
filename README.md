@@ -141,12 +141,11 @@ uv run pytest tests/test_example.py -v
 
 ## Documentation
 
-- [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) - Template variable reference
-- [SETUP.md](SETUP.md) - Detailed setup guide
-- [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) - Quick setup checklist
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [PyPI.md](PyPI.md) - PyPI publishing guide
+- [README.md](README.md) - This file
 
 ## License
 
-This package is licensed under the Apache License 2.0. See
-[LICENSE-APACHE](LICENSE-APACHE) for details.
+This package is licensed under the Apache License 2.0.
+See [LICENSE-APACHE](LICENSE-APACHE) for details.
