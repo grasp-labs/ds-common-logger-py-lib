@@ -110,16 +110,17 @@ uv run pytest tests/test_example.py -v
 │       ├── formatter.py             # ExtraFieldsFormatter class
 │       ├── mixin.py                 # LoggingMixin class
 │       └── __init__.py              # Package initialization
-├── .pre-commit-config.yaml   # Pre-commit hooks configuration
 ├── tests/                    # Test files
 ├── docs/                     # Sphinx documentation
-├── pyproject.toml            # Project configuration
+├── .pre-commit-config.yaml   # Pre-commit hooks configuration
+├── LICENSE-APACHE            # Apache License 2.0
 ├── Makefile                  # Development commands
+├── CONTRIBUTING.md           # Contribution guidelines
+├── PyPI.md                   # PyPI publishing guide
+├── README.md                 # This file
+├── pyproject.toml            # Project configuration
 ├── VERSION.txt               # Version file
 ├── codecov.yaml              # Codecov configuration
-├── CONTRIBUTING.md           # Contribution guidelines
-├── SETUP.md                  # Setup instructions
-├── PyPI.md                   # PyPI publishing guide
 ```
 
 ## Features
