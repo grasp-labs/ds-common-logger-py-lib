@@ -23,6 +23,7 @@ ignore = [
     "PLR0913", # too many arguments
     "PLR0911", # too many return statements
     "PLR2004", # magic value used in comparison
+    "TCH003",  # move stdlib import to type-checking block (we prefer normal imports)
 ]
 
 [lint.per-file-ignores]

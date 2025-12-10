@@ -68,7 +68,10 @@ class TestFormatter(TestCase):
             pass
 
         # Mock json.dumps to raise an error to test error handling path
-        with patch("ds_common_logger_py_lib.formatter.json.dumps", side_effect=TypeError("Cannot serialize")):
+        with patch(
+            "ds_common_logger_py_lib.formatter.json.dumps",
+            side_effect=TypeError("Cannot serialize"),
+        ):
             self.logger.info("Test", extra={"obj": unserializable_func})
             output = self.stream.getvalue()
 

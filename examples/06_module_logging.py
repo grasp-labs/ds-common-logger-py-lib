@@ -7,6 +7,7 @@ Demonstrates how logger names appear when using imported modules:
 
 This shows the difference between running a script directly vs importing it.
 """
+
 import logging
 from ds_common_logger_py_lib import Logger, LoggingMixin
 
@@ -39,7 +40,10 @@ class DataProcessor(LoggingMixin):
         transformer = DataTransformer()
         result = transformer.transform(data)
 
-        self.log.info("Pipeline completed successfully", extra={"result_keys": list(result.keys())})
+        self.log.info(
+            "Pipeline completed successfully",
+            extra={"result_keys": list(result.keys())},
+        )
         return result
 
 
@@ -52,4 +56,3 @@ if __name__ == "__main__":
     result = processor.process(data)
 
     logger.info("Application finished", extra={"result_count": len(result)})
-

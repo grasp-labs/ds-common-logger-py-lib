@@ -38,16 +38,15 @@ clean: ## Clean build and cache artifacts
 
 .PHONY: lint
 lint: ## Lint with ruff
-	uv run ruff check --fix $(SRC_DIR) $(TEST_DIR)
+	uv run ruff check --config .config/ruff.toml --fix --exit-non-zero-on-fix $(SRC_DIR)
 
 .PHONY: format
-format: ## Format with black and ruff
-	uv run black $(SRC_DIR) $(TEST_DIR)
-	uv run ruff format $(SRC_DIR) $(TEST_DIR)
+format: ## Format with ruff
+	uv run ruff format --config .config/ruff.toml .
 
 .PHONY: type-check
 type-check: ## Type-check with mypy
-	uv run mypy $(SRC_DIR)
+	uv run mypy --config-file .config/mypy.ini $(SRC_DIR)
 
 .PHONY: security-check
 security-check: ## Run security checks (bandit)

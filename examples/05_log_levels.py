@@ -15,6 +15,7 @@ Logger()
 
 class VerboseService(LoggingMixin):
     """Service with verbose DEBUG logging."""
+
     log_level = logging.DEBUG
 
     def process(self) -> None:
@@ -25,6 +26,7 @@ class VerboseService(LoggingMixin):
 
 class StandardService(LoggingMixin):
     """Service with standard INFO logging."""
+
     log_level = logging.INFO
 
     def process(self) -> None:
@@ -35,6 +37,7 @@ class StandardService(LoggingMixin):
 
 class QuietService(LoggingMixin):
     """Service with minimal WARNING logging."""
+
     log_level = logging.WARNING
 
     def process(self) -> None:

@@ -84,4 +84,3 @@ if __name__ == "__main__":
     print("- OrderService overrides log_level to DEBUG, so debug logs appear")
     print("- Other services use INFO level from BaseService")
     print("=" * 60)
-

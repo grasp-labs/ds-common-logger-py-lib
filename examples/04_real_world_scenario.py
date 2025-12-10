@@ -20,7 +20,10 @@ class InventoryService(LoggingMixin):
 
     def reserve_items(self, product_id: str, quantity: int) -> str:
         reservation_id = "res_123"
-        self.log.info("Items reserved", extra={"product_id": product_id, "reservation_id": reservation_id})
+        self.log.info(
+            "Items reserved",
+            extra={"product_id": product_id, "reservation_id": reservation_id},
+        )
         return reservation_id
 
 
@@ -57,7 +60,10 @@ class OrderProcessor(LoggingMixin):
         self.notifications = NotificationService()
 
     def process_order(self, user_id: str, product_id: str, quantity: int, address: dict) -> dict:
-        self.log.info("Starting order processing", extra={"user_id": user_id, "product_id": product_id})
+        self.log.info(
+            "Starting order processing",
+            extra={"user_id": user_id, "product_id": product_id},
+        )
 
         # Each service logs with its own name, making it easy to trace the flow
         if not self.inventory.check_stock(product_id, quantity):
@@ -90,5 +96,5 @@ if __name__ == "__main__":
         user_id="user_123",
         product_id="prod_456",
         quantity=2,
-        address={"city": "Oslo", "country": "Norway"}
+        address={"city": "Oslo", "country": "Norway"},
     )
