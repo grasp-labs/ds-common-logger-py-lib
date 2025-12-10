@@ -13,7 +13,7 @@ class-based loggers, and flexible configuration.
 ## Quick Start
 
 ```bash
-install pre-commit
+pre-commit install
 uv sync --all-extras --dev
 ```
 
@@ -29,7 +29,7 @@ make help
 
 # Code Quality
 make lint           # Check code quality with ruff
-make format         # Format code with black and ruff
+make format         # Format code with ruff
 make type-check     # Run mypy type checking
 make security-check # Run security checks with bandit
 
@@ -127,7 +127,7 @@ uv run pytest tests/test_example.py -v
 
 - **Modern Python Tooling**: Uses `uv` for fast dependency management
 - **Type Safety**: Strict mypy configuration with full type hints
-- **Code Quality**: Ruff for linting, Black for formatting
+- **Code Quality**: Ruff for linting and formatting
 - **Testing**: Pytest with 95% coverage requirement
 - **Documentation**: Sphinx with autoapi for automatic API docs
 - **CI/CD**: GitHub Actions for testing, building, and publishing

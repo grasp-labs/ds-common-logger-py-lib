@@ -1,6 +1,7 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing! This document provides guidelines and standards for contributing to packages created from this template.
+Thank you for your interest in contributing! This document provides guidelines
+and standards for contributing to packages created from this template.
 
 ## Code of Conduct
 
@@ -79,8 +80,8 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 - **Follow PEP 8** coding standards
 - **Use type hints** for all functions and methods
-- **Line length**: 131 characters (as configured in Black)
-- **Format code** using Black and Ruff before committing
+- **Line length**: 131 characters (as configured in Ruff)
+- **Format code** using Ruff before committing
 
 ### Documentation
 
@@ -211,7 +212,7 @@ Hooks check for:
 - Trailing whitespace
 - End of file formatting
 - YAML/TOML/JSON validity
-- Code formatting (Black, Ruff)
+- Code formatting (Ruff)
 - Type checking (mypy)
 - Docstring requirements
 
