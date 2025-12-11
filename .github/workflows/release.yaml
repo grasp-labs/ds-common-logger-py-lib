@@ -43,7 +43,7 @@ jobs:
           password: ${{ secrets.PYPI_API_KEY }}
           verbose: true
 
-  create-github-release:
+  github-release:
     needs: [build, publish]
     runs-on: ubuntu-latest
     permissions:
@@ -64,5 +64,8 @@ jobs:
           files: |
             dist/*.whl
             dist/*.tar.gz
+          name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
           generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

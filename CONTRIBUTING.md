@@ -1,7 +1,7 @@
 # Contributing Guidelines
 
 Thank you for your interest in contributing! This document provides guidelines
-and standards for contributing to packages created from this template.
+and standards for contributing to the ds-common-logger-py-lib package.
 
 ## Code of Conduct
 
@@ -16,7 +16,7 @@ and standards for contributing to packages created from this template.
 2. **Clone your fork**:
 
    ```bash
-   git clone https://github.com/your-username/ds-common-logger-py-lib.git
+   git clone https://github.com/grasp-labs/ds-common-logger-py-lib.git
    cd ds-common-logger-py-lib
    ```
 

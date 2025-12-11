@@ -42,6 +42,11 @@ make build         # Build package
 make docs          # Build documentation
 make publish-test  # Upload to TestPyPI
 make publish       # Upload to PyPI
+
+# Trigger a release
+make tag
+make version
+
 ```
 
 ### Version Management
@@ -110,17 +115,17 @@ uv run pytest tests/test_example.py -v
 │       ├── formatter.py             # ExtraFieldsFormatter class
 │       ├── mixin.py                 # LoggingMixin class
 │       └── __init__.py              # Package initialization
+├── .pre-commit-config.yaml   # Pre-commit hooks configuration
 ├── tests/                    # Test files
 ├── docs/                     # Sphinx documentation
-├── .pre-commit-config.yaml   # Pre-commit hooks configuration
-├── LICENSE-APACHE            # Apache License 2.0
+├── LICENSE-APACHE            # License file
+├── pyproject.toml            # Project configuration
 ├── Makefile                  # Development commands
+├── VERSION.txt               # Version file
+├── codecov.yaml              # Codecov configuration
 ├── CONTRIBUTING.md           # Contribution guidelines
 ├── PyPI.md                   # PyPI publishing guide
 ├── README.md                 # This file
-├── pyproject.toml            # Project configuration
-├── VERSION.txt               # Version file
-├── codecov.yaml              # Codecov configuration
 ```
 
 ## Features
