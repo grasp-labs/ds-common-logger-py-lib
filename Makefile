@@ -39,6 +39,7 @@ clean: ## Clean build and cache artifacts
 .PHONY: lint
 lint: ## Lint with ruff
 	uv run ruff check --config .config/ruff.toml --fix --exit-non-zero-on-fix $(SRC_DIR) $(TEST_DIR)
+	uv run pre-commit run markdownlint --all-files
 
 .PHONY: format
 format: ## Format with ruff
