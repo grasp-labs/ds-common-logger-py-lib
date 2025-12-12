@@ -12,11 +12,13 @@ Example:
 
     print(f"Package version: {__version__}")
 """
+
 from pathlib import Path
 
+from .core import Logger
+from .mixin import LoggingMixin
 
 _VERSION_FILE = Path(__file__).parent.parent.parent / "VERSION.txt"
-__version__ = _VERSION_FILE.read_text().strip(
-) if _VERSION_FILE.exists() else "0.0.0"
+__version__ = _VERSION_FILE.read_text().strip() if _VERSION_FILE.exists() else "0.0.0"
 
-__all__ = ["__version__"]
+__all__ = ["Logger", "LoggingMixin", "__version__"]

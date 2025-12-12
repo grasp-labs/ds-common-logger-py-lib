@@ -1,36 +1,20 @@
-# Python Package Template
+# DS Common Logger Python Library
 
 ![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)
 [![PyPI version](https://badge.fury.io/py/ds-common-logger-py-lib.svg?kill_cache=1)](https://badge.fury.io/py/ds-common-logger-py-lib)
 [![Build Status](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml/badge.svg)](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml)
 [![codecov](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-A production-ready Python package template for creating well-structured, maintainable Python libraries with comprehensive tooling, testing, and documentation support.
+A Python logging library from the ds-common library collection,
+providing structured logging with support for extra fields,
+class-based loggers, and flexible configuration.
 
 ## Quick Start
 
-This is a template repository. To use it:
-
-1. **Replace template variables**: See [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) for all variables that need to be replaced
-2. **Follow the setup guide**: See [SETUP.md](SETUP.md) for detailed setup instructions
-3. **Use the checklist**: See [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) for a quick reference
-
-### Quick Setup
-
-```shell
-# 1. Replace all template variables (see TEMPLATE_VARIABLES.md)
-# 2. Rename the source directory
-mv src/ds_common_{name}_py_lib src/ds_common_logger_py_lib
-
-# 3. Install dependencies
+```bash
+pre-commit install
 uv sync --all-extras --dev
-
-# 4. Install pre-commit hooks
-uv run pre-commit install
-
-# 5. Verify setup
-make test
 ```
 
 ## Development
@@ -45,7 +29,7 @@ make help
 
 # Code Quality
 make lint           # Check code quality with ruff
-make format         # Format code with black and ruff
+make format         # Format code with ruff
 make type-check     # Run mypy type checking
 make security-check # Run security checks with bandit
 
@@ -58,6 +42,11 @@ make build         # Build package
 make docs          # Build documentation
 make publish-test  # Upload to TestPyPI
 make publish       # Upload to PyPI
+
+# Trigger a release
+make tag
+make version
+
 ```
 
 ### Version Management
@@ -70,7 +59,10 @@ make version
 make tag           # Create git tag and push (triggers release)
 ```
 
-> **⚠️ Warning**: The `make tag` command will create a git tag and push it to the remote repository, which may trigger automated releases. Ensure you have updated `VERSION.txt` and committed all changes before running this command.
+> **⚠️ Warning**: The `make tag` command will create a git tag and
+> push it to the remote repository, which may trigger automated
+> releases. Ensure you have updated `VERSION.txt` and committed all
+> changes before running this command.
 
 ### Pre-commit Hooks
 
@@ -119,24 +111,28 @@ uv run pytest tests/test_example.py -v
 │   └── CODEOWNERS            # Code ownership file
 ├── src/
 │   └── ds_common_{name}_py_lib/     # Rename to your module name
-│       └── __init__.py
+│       ├── core.py                  # Logger class
+│       ├── formatter.py             # ExtraFieldsFormatter class
+│       ├── mixin.py                 # LoggingMixin class
+│       └── __init__.py              # Package initialization
 ├── .pre-commit-config.yaml   # Pre-commit hooks configuration
 ├── tests/                    # Test files
 ├── docs/                     # Sphinx documentation
+├── LICENSE-APACHE            # License file
 ├── pyproject.toml            # Project configuration
 ├── Makefile                  # Development commands
 ├── VERSION.txt               # Version file
 ├── codecov.yaml              # Codecov configuration
 ├── CONTRIBUTING.md           # Contribution guidelines
-├── SETUP.md                  # Setup instructions
 ├── PyPI.md                   # PyPI publishing guide
+├── README.md                 # This file
 ```
 
 ## Features
 
 - **Modern Python Tooling**: Uses `uv` for fast dependency management
 - **Type Safety**: Strict mypy configuration with full type hints
-- **Code Quality**: Ruff for linting, Black for formatting
+- **Code Quality**: Ruff for linting and formatting
 - **Testing**: Pytest with 95% coverage requirement
 - **Documentation**: Sphinx with autoapi for automatic API docs
 - **CI/CD**: GitHub Actions for testing, building, and publishing
@@ -151,11 +147,11 @@ uv run pytest tests/test_example.py -v
 
 ## Documentation
 
-- [TEMPLATE_VARIABLES.md](TEMPLATE_VARIABLES.md) - Template variable reference
-- [SETUP.md](SETUP.md) - Detailed setup guide
-- [TEMPLATE_CHECKLIST.md](TEMPLATE_CHECKLIST.md) - Quick setup checklist
 - [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [PyPI.md](PyPI.md) - PyPI publishing guide
+- [README.md](README.md) - This file
 
 ## License
 
-This package is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+This package is licensed under the Apache License 2.0.
+See [LICENSE-APACHE](LICENSE-APACHE) for details.
