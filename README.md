@@ -1,6 +1,6 @@
 # DS Common Logger Python Library
 
-![Python Versions](https://img.shields.io/badge/python-3.9%20|%203.10%20|%203.11%20|%203.12-blue)
+![Python Versions](https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12%20|%203.13%20|%203.14-blue)
 [![PyPI version](https://badge.fury.io/py/ds-common-logger-py-lib.svg?kill_cache=1)](https://badge.fury.io/py/ds-common-logger-py-lib)
 [![Build Status](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml/badge.svg)](https://github.com/grasp-labs/ds-common-logger-py-lib/actions/workflows/build.yaml)
 [![codecov](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib/graph/badge.svg?token=EO3YCNCZFS)](https://codecov.io/gh/grasp-labs/ds-common-logger-py-lib)
@@ -141,7 +141,7 @@ uv run pytest tests/test_example.py -v
 
 ## Requirements
 
-- Python 3.9+
+- Python 3.10+
 - [uv](https://github.com/astral-sh/uv) package manager
 - Make (for development commands)
 
