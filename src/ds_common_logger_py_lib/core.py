@@ -1,19 +1,25 @@
 """
-File: core.py
-Description: Core logging functionality for the DS shared logger package.
-Region: packages/logging/python
+**File:** ``core.py``
+**Region:** ``ds_common_logger_py_lib``
 
-# Example:
+Description
+-----------
+Defines the core logging API for this package, including a `Logger` helper for
+configuring Python logging, retrieving named loggers, and updating the active
+log format across already-created loggers.
 
-from ds_common_logger_py_lib import Logger
+Example
+-------
+.. code-block:: python
 
-Logger()
-logger = Logger.get_logger(__name__)
-logger.info("Hello, world!")
+    from ds_common_logger_py_lib import Logger
 
-# Customize default format
-Logger.set_log_format("%(levelname)s: %(message)s")
-logger.info("Custom format message")
+    Logger()
+    logger = Logger.get_logger(__name__)
+    logger.info("Hello, world!")
+
+    Logger.set_log_format("%(levelname)s: %(message)s")
+    logger.info("Custom format message")
 """
 
 from __future__ import annotations

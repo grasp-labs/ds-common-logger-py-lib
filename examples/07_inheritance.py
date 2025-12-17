@@ -1,11 +1,11 @@
 """
-Example: Logging with class inheritance.
+**File:** ``07_inheritance.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Demonstrates how LoggingMixin works with inheritance:
-- Base class inherits LoggingMixin
-- Child classes inherit from base class
-- Each class gets its own logger based on its actual class name
-- Logger names reflect the actual class, not the base class
+Description
+-----------
+Example script demonstrating how ``LoggingMixin`` behaves under inheritance,
+including per-class logger naming and per-class log level overrides.
 """
 
 from ds_common_logger_py_lib import Logger, LoggingMixin

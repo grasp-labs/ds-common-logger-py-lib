@@ -1,10 +1,11 @@
 """
-Example helper module: Demonstrates logging in imported modules.
+**File:** ``helpers.py``
+**Region:** ``ds_common_logger_py_lib``
 
-This module shows how logger names appear when modules are imported
-(using the actual module path instead of __main__).
-
-Demonstrates both function-level logging and class-level logging with LoggingMixin.
+Description
+-----------
+Helper module used by example scripts to demonstrate logging in imported code,
+including module-level loggers and class-based logging via ``LoggingMixin``.
 """
 
 from ds_common_logger_py_lib import Logger, LoggingMixin

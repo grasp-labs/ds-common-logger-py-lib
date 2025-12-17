@@ -1,7 +1,11 @@
 """
-Example: Multi-class logging with per-class loggers.
+**File:** ``02_multi_class.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Shows how each class gets its own logger with distinct names.
+Description
+-----------
+Example script demonstrating per-class loggers via ``LoggingMixin`` across
+multiple services.
 """
 
 from ds_common_logger_py_lib import LoggingMixin

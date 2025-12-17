@@ -1,19 +1,12 @@
 """
-File: test_formatter.py
-Description: Test the ExtraFieldsFormatter functionality for the DS shared logger package.
-Region: packages/logging/python/tests
+**File:** ``test_formatter.py``
+**Region:** ``ds_common_logger_py_lib``
 
-# Example:
-
-from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
-import logging
-
-formatter = ExtraFieldsFormatter()
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-logger = logging.getLogger("test")
-logger.addHandler(handler)
-logger.info("Test message", extra={"user_id": 123})
+Description
+-----------
+Unit tests for ``ExtraFieldsFormatter``, ensuring extra fields are appended,
+JSON serialization is used when possible, and serialization errors are handled
+gracefully.
 """
 
 import io

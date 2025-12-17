@@ -1,14 +1,11 @@
 """
-File: test_core.py
-Description: Test the core Logger functionality for the DS shared logger package.
-Region: packages/logging/python/tests
+**File:** ``test_core.py``
+**Region:** ``ds_common_logger_py_lib``
 
-# Example:
-
-from ds_common_logger_py_lib import Logger
-
-logger = Logger.get_logger(__name__)
-logger.info("Test message", extra={"key": "value"})
+Description
+-----------
+Unit tests for the core ``Logger`` helper, covering configuration, logger
+creation, handler behavior, format updates, and extra fields support.
 """
 
 import io

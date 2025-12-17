@@ -1,7 +1,11 @@
 """
-Example: Single function logging without mixin.
+**File:** ``01_single_function.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Shows basic logging using Logger.get_logger() directly.
+Description
+-----------
+Example script showing basic logging using ``Logger.get_logger()`` directly from
+a single function.
 """
 
 from ds_common_logger_py_lib import Logger

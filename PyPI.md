@@ -107,7 +107,7 @@ order_service = OrderService()
 
 ## Requirements
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 
 ## Documentation
 
