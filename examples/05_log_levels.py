@@ -1,10 +1,11 @@
 """
-Example: Setting log levels cleanly in LoggingMixin.
+**File:** ``05_log_levels.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Shows three ways to set log levels:
-1. Class-level attribute (log_level)
-2. Method call (set_log_level)
-3. Per-call override (logger(level=...))
+Description
+-----------
+Example script showing how to control log levels with ``LoggingMixin`` using
+class defaults, runtime updates, and per-call overrides.
 """
 
 from ds_common_logger_py_lib import Logger, LoggingMixin

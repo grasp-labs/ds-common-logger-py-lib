@@ -1,9 +1,12 @@
 """
-Example: Real-world scenario showing per-class logger benefits.
+**File:** ``04_real_world_scenario.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Simulates an e-commerce order processing pipeline where multiple
-services interact. Each service has its own logger, making it easy
-to trace operations across the system.
+Description
+-----------
+Example script simulating a multi-service workflow (order processing) where
+each service logs independently via ``LoggingMixin`` to make the overall flow
+easier to trace.
 """
 
 from ds_common_logger_py_lib import Logger, LoggingMixin
