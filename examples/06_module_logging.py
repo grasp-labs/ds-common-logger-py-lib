@@ -1,11 +1,11 @@
 """
-Example: Logging across multiple modules with local imports.
+**File:** ``06_module_logging.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Demonstrates how logger names appear when using imported modules:
-- When run directly: logger name shows __main__
-- When imported: logger name shows the actual module path (examples.helpers)
-
-This shows the difference between running a script directly vs importing it.
+Description
+-----------
+Example script demonstrating module-level logging and how logger names differ
+between direct execution (``__main__``) and imported modules (e.g. ``helpers``).
 """
 
 import logging

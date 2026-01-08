@@ -1,10 +1,12 @@
 """
-Example: Logger isolation and filtering benefits.
+**File:** ``03_logger_isolation.py``
+**Region:** ``ds_common_logger_py_lib``
 
-Demonstrates how per-class loggers enable:
-- Filtering logs by class/service
-- Setting different log levels per class
-- Identifying log sources in complex applications
+Description
+-----------
+Example script demonstrating why per-class loggers are useful: log filtering by
+logger name, per-service level control, and easier source attribution in larger
+applications.
 """
 
 from ds_common_logger_py_lib import LoggingMixin

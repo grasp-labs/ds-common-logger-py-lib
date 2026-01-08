@@ -1,19 +1,29 @@
 """
-File: formatter.py
-Description: Custom formatter for handling extra fields in log output.
-Region: packages/logging/python
+**File:** ``formatter.py``
+**Region:** ``ds_common_logger_py_lib``
 
-# Example:
+Description
+-----------
+Defines a custom logging formatter that appends non-standard LogRecord fields
+(i.e. values passed via the ``extra=...`` argument) to the formatted log output.
 
-from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
-import logging
+Example
+-------
+.. code-block:: python
 
-formatter = ExtraFieldsFormatter()
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-logger = logging.getLogger("test")
-logger.addHandler(handler)
-logger.info("Test message", extra={"user_id": 123})
+    import logging
+
+    from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
+
+    formatter = ExtraFieldsFormatter()
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+
+    logger = logging.getLogger("test")
+    logger.addHandler(handler)
+    logger.setLevel(logging.INFO)
+
+    logger.info("Test message", extra={"user_id": 123})
 """
 
 import json

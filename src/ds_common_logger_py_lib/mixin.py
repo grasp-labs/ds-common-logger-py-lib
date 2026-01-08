@@ -1,23 +1,29 @@
 """
-File: mixin.py
-Description: Logging mixin class for convenient logger access in classes.
-Region: packages/logging/python
+**File:** ``mixin.py``
+**Region:** ``ds_common_logger_py_lib``
 
-# Example:
+Description
+-----------
+Defines a convenience mixin that provides per-class and per-instance loggers,
+backed by the package ``Logger`` configuration. Each concrete class receives a
+distinct logger name derived from its module and class name.
 
-from ds_common_logger_py_lib import LoggingMixin
+Example
+-------
+.. code-block:: python
+
+    from ds_common_logger_py_lib import LoggingMixin
 
 
-class MyClass(LoggingMixin):
-    def do_something(self):
-        self.log.info("Doing something")
+    class MyClass(LoggingMixin):
+        def do_something(self) -> None:
+            self.log.info("Doing something")
 
 
-instance = MyClass()
-instance.log.info("Hello, world!")
+    instance = MyClass()
+    instance.log.info("Hello, world!")
 
-# Set format dynamically
-MyClass.set_log_format("%(levelname)s: %(message)s")
+    MyClass.set_log_format("%(levelname)s: %(message)s")
 """
 
 from __future__ import annotations

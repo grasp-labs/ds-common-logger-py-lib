@@ -1,18 +1,11 @@
 """
-File: test_mixin.py
-Description: Test the LoggingMixin functionality for the DS shared logger package.
-Region: packages/logging/python/tests
+**File:** ``test_mixin.py``
+**Region:** ``ds_common_logger_py_lib``
 
-# Example:
-
-from ds_common_logger_py_lib import LoggingMixin
-
-class MyService(LoggingMixin):
-    def do_something(self):
-        self.log.info("Doing something")
-
-service = MyService()
-service.log.info("Test message")
+Description
+-----------
+Unit tests for ``LoggingMixin``, validating logger naming, caching behavior,
+log level overrides, formatting updates, and inheritance interactions.
 """
 
 import logging
