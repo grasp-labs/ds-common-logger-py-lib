@@ -69,3 +69,54 @@ jobs:
           generate_release_notes: true
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+
+
+  dynamodb-push:
+    needs: [github-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    env:
+      DOMAIN: ds
+      AWS_REGION: eu-north-1
+      SERVICE_GROUP: packages
+      SERVICE_NAME: {{PROJECT_NAME}}
+      TABLE_NAME: ds-coordination-release-fragments-prod
+
+    steps:
+    - name: Configure AWS CLI
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Extract Metadata
+      id: meta
+      run: |
+        echo "VERSION=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+        echo "COMMIT_SHA=${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+        echo "TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+        echo "ARTIFACT_URL=https://github.com/${GITHUB_REPOSITORY}/releases/tag/${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+
+    - name: Push Release Fragment to DynamoDB
+      run: |
+        aws dynamodb put-item \
+          --table-name ${{ env.TABLE_NAME }} \
+          --item '{
+            "PK": {"S": "${{ steps.meta.outputs.VERSION }}"},
+            "SK": {"S": "${{ env.DOMAIN }}#${{ env.SERVICE_GROUP }}#${{ env.SERVICE_NAME }}"},
+            "GSI1PK": {"S": "service#${{ env.SERVICE_NAME }}"},
+            "GSI1SK": {"S": "${{ steps.meta.outputs.VERSION }}"},
+            "GSI2PK": {"S": "latest#${{ env.DOMAIN }}#${{ env.SERVICE_GROUP }}"},
+            "GSI2SK": {"S": "${{ env.SERVICE_NAME }}"},
+            "domain": {"S": "${{ env.DOMAIN }}"},
+            "serviceGroup": {"S": "${{ env.SERVICE_GROUP }}"},
+            "serviceName": {"S": "${{ env.SERVICE_NAME }}"},
+            "version": {"S": "${{ steps.meta.outputs.VERSION }}"},
+            "commit": {"S": "${{ steps.meta.outputs.COMMIT_SHA }}"},
+            "artifact": {"S": "${{ steps.meta.outputs.ARTIFACT_URL }}"},
+            "timestamp": {"S": "${{ steps.meta.outputs.TIMESTAMP }}"}
+          }' \
+          --region $AWS_REGION
