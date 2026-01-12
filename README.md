@@ -61,7 +61,7 @@ make tag           # Create git tag and push (triggers release)
 
 > **⚠️ Warning**: The `make tag` command will create a git tag and
 > push it to the remote repository, which may trigger automated
-> releases. Ensure you have updated  `pyproject.toml` and committed all
+> releases. Ensure you have updated `pyproject.toml` and committed all
 > changes before running this command.
 
 ### Pre-commit Hooks
