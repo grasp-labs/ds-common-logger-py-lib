@@ -38,9 +38,9 @@ try:
     version = pkg_version("ds_common_logger_py_lib")
 except PackageNotFoundError:
     try:
-        import tomllib
+        import tomllib  # type: ignore[no-redef]
     except ModuleNotFoundError:  # pragma: no cover
-        import tomli as tomllib  # type: ignore[import-not-found]
+        import tomli as tomllib  # type: ignore[import-not-found,no-redef]
 
     with open("../../pyproject.toml", "rb") as f:
         pyproject = tomllib.load(f)
