@@ -4,32 +4,21 @@
 
 Description
 -----------
-Package entrypoint that exposes the public API (``Logger``, ``LoggingMixin``)
-and the installed package version (``__version__``).
+A Python package from the ds_common_logger_py_lib library.
 
 Example
 -------
 .. code-block:: python
 
-    from ds_common_logger_py_lib import Logger, LoggingMixin, __version__
+    from ds_common_logger_py_lib import __version__
 
-    Logger()
-    logger = Logger.get_logger(__name__)
-    logger.info("Hello from ds_common_logger_py_lib", extra={"version": __version__})
-
-
-    class Service(LoggingMixin):
-        pass
-
-    Service().log.info("Hello from LoggingMixin")
+    print(f"Package version: {__version__}")
 """
-
-from pathlib import Path
+from importlib.metadata import version
 
 from .core import Logger
 from .mixin import LoggingMixin
 
-_VERSION_FILE = Path(__file__).parent.parent.parent / "VERSION.txt"
-__version__ = _VERSION_FILE.read_text().strip() if _VERSION_FILE.exists() else "0.0.0"
+__version__ = version("ds_common_logger_py_lib")
 
 __all__ = ["Logger", "LoggingMixin", "__version__"]
