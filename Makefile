@@ -88,11 +88,11 @@ docs: ## Build Sphinx documentation
 # ===== Versioning =====
 
 PYPROJECT_VERSION := $(shell python -c "import pathlib, tomllib; pyproject = tomllib.loads(pathlib.Path('pyproject.toml').read_text(encoding='utf-8')); print(pyproject['project']['version'])")
- 
+
 .PHONY: version
 version: ## Show current version
 	@echo "$(PYPROJECT_VERSION)"
- 
+
 .PHONY: tag
 tag: ## Tag the current version from pyproject.toml and push to origin (triggers release)
 	@test -n "$(PYPROJECT_VERSION)" || (echo "❌ Could not read version from pyproject.toml" && exit 1)

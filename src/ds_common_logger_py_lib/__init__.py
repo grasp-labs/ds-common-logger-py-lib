@@ -14,6 +14,7 @@ Example
 
     print(f"Package version: {__version__}")
 """
+
 from importlib.metadata import version
 
 from .core import Logger
