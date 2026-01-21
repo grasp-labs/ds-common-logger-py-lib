@@ -12,7 +12,6 @@ import logging
 import os
 from ds_common_logger_py_lib import Logger, LoggingMixin
 
-# Import local helper module from the same directory
 from helpers import DataValidator, DataTransformer, validate_data_format
 
 log_file_path = os.path.join(os.path.dirname(__file__), "example.log")
