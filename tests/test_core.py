@@ -13,7 +13,8 @@ import logging
 import unittest
 from unittest import TestCase
 
-from ds_common_logger_py_lib import Logger
+from ds_common_logger_py_lib import Logger, LoggerConfig
+from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
 
 
 class TestLogging(TestCase):
@@ -27,6 +28,15 @@ class TestLogging(TestCase):
 
     def setUp(self) -> None:
         """Set up test fixtures."""
+        # Reset LoggerConfig
+        LoggerConfig._configured = False
+        LoggerConfig._prefix = ""
+        LoggerConfig._format_string = None
+        LoggerConfig._date_format = None
+        LoggerConfig._level = logging.INFO
+        LoggerConfig._handlers = []
+        LoggerConfig._default_handler = None
+
         # Reset root logger to clean state
         root_logger = logging.getLogger()
         root_logger.handlers.clear()
@@ -193,6 +203,47 @@ class TestLogging(TestCase):
         self.assertIsNotNone(formatter)
         if formatter is not None:
             self.assertEqual(formatter.datefmt, custom_date_format)
+
+    # ========================================================================
+    # LoggerConfig Integration Tests
+    # ========================================================================
+
+    def test_get_logger_with_logger_config(self) -> None:
+        """Test get_logger() when LoggerConfig is configured."""
+        LoggerConfig.configure(prefix="TestApp", level=logging.DEBUG)
+        logger = Logger.get_logger("test_logger")
+        self.assertEqual(logger.level, logging.DEBUG)
+        handler = logger.handlers[0]
+        if isinstance(handler.formatter, ExtraFieldsFormatter):
+            self.assertEqual(handler.formatter.template_vars.get("prefix"), "TestApp")
+
+    def test_get_logger_without_logger_config(self) -> None:
+        """Test get_logger() when LoggerConfig is not configured."""
+        logger = Logger.get_logger("test_logger_fallback")
+        self.assertIsNotNone(logger)
+        self.assertGreater(len(logger.handlers), 0)
+
+    def test_create_handler_with_logger_config(self) -> None:
+        """Test _create_handler() uses LoggerConfig formatter when configured."""
+        LoggerConfig.configure(prefix="TestApp", format_string="%(message)s")
+        handler = Logger._create_handler(logging.INFO)
+        self.assertIsInstance(handler.formatter, ExtraFieldsFormatter)
+
+    def test_get_logger_detects_existing_config_handlers(self) -> None:
+        """Test get_logger() detects when LoggerConfig handlers already present."""
+        handler = logging.StreamHandler(io.StringIO())
+        LoggerConfig.configure(prefix="Test", handlers=[handler])
+        logger = logging.getLogger("test_existing")
+        logger.addHandler(handler)
+        logger2 = Logger.get_logger("test_existing")
+        self.assertIn(handler, logger2.handlers)
+
+    def test_get_logger_adds_config_handlers_when_not_present(self) -> None:
+        """Test get_logger() adds config handlers when not already present."""
+        handler = logging.StreamHandler(io.StringIO())
+        LoggerConfig.configure(prefix="Test", handlers=[handler])
+        logger = Logger.get_logger("test_new")
+        self.assertIn(handler, logger.handlers)
 
 
 if __name__ == "__main__":
