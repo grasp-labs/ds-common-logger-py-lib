@@ -10,20 +10,25 @@ distinct logger name derived from its module and class name.
 
 Example
 -------
-.. code-block:: python
-
-    from ds_common_logger_py_lib import LoggingMixin
-
-
-    class MyClass(LoggingMixin):
-        def do_something(self) -> None:
-            self.log.info("Doing something")
-
-
-    instance = MyClass()
-    instance.log.info("Hello, world!")
-
-    MyClass.set_log_format("%(levelname)s: %(message)s")
+    >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+    >>> import logging
+    >>>
+    >>> Logger()
+    >>>
+    >>> class MyClass(LoggingMixin):
+    ...     def do_something(self):
+    ...         self.log.info("Doing something")
+    >>>
+    >>> instance = MyClass()
+    >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 24, "Hello, world!", (), None)
+    >>> handler = instance.log.handlers[0]
+    >>> handler.formatter.format(record)
+    '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:24]: Hello, world!'
+    >>>
+    >>> MyClass.set_log_format("%(levelname)s: %(message)s")
+    >>> record2 = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 26, "Formatted message", (), None)
+    >>> handler.formatter.format(record2)
+    'INFO: Formatted message'
 """
 
 from __future__ import annotations
@@ -45,12 +50,18 @@ class LoggingMixin:
     To set a default log level for a class, set the log_level class attribute:
 
     Example:
+        >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+        >>> import logging
+        >>> Logger()
         >>> class MyClass(LoggingMixin):
-        ...     log_level = logging.DEBUG  # Set default level for this class
+        ...     log_level = logging.DEBUG
         ...     def do_something(self):
         ...         self.log.info("Doing something")
         >>> instance = MyClass()
-        >>> instance.log.info("Test message")
+        >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 59, "Test message", (), None)
+        >>> handler = instance.log.handlers[0]
+        >>> handler.formatter.format(record)
+        '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:59]: Test message'
     """
 
     _loggers: ClassVar[dict[type[LoggingMixin], logging.Logger]] = {}
@@ -68,11 +79,17 @@ class LoggingMixin:
             Configured logger instance for the class.
 
         Example:
+            >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+            >>> import logging
+            >>> Logger()
             >>> class MyClass(LoggingMixin):
             ...     log_level = logging.DEBUG
             ...     pass
             >>> logger = MyClass.logger()
-            >>> logger.info("Class-level log")
+            >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 88, "Class-level log", (), None)
+            >>> handler = logger.handlers[0]
+            >>> handler.formatter.format(record)
+            '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:88]: Class-level log'
         """
         return cls._get_logger(level)
 
@@ -85,10 +102,15 @@ class LoggingMixin:
             level: Logging level to set.
 
         Example:
+            >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+            >>> import logging
+            >>> Logger()
             >>> class MyClass(LoggingMixin):
             ...     pass
             >>> MyClass.set_log_level(logging.DEBUG)
-            >>> MyClass.logger().debug("This will now be logged")
+            >>> logger = MyClass.logger()
+            >>> logger.level == logging.DEBUG
+            True
         """
         cls.log_level = level
         if cls in cls._loggers:
@@ -113,10 +135,20 @@ class LoggingMixin:
             date_format: Date format string to set. If None, resets to default date format.
 
         Example:
+            >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+            >>> import logging
+            >>> Logger()
             >>> class MyClass(LoggingMixin):
             ...     pass
             >>> MyClass.set_log_format("%(levelname)s: %(message)s")
-            >>> MyClass.logger().info("This will use the custom format")
+            >>> logger = MyClass.logger()
+            >>> record = logging.LogRecord(
+            ...     "__main__.MyClass", logging.INFO, "mixin.py", 130,
+            ...     "This will use the custom format", (), None
+            ... )
+            >>> handler = logger.handlers[0]
+            >>> handler.formatter.format(record)
+            'INFO: This will use the custom format'
         """
         Logger.set_log_format(format_string, date_format)
         if cls in cls._loggers:
@@ -134,10 +166,16 @@ class LoggingMixin:
             Configured logger instance for the class.
 
         Example:
+            >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+            >>> import logging
+            >>> Logger()
             >>> class MyClass(LoggingMixin):
             ...     pass
             >>> logger = MyClass._get_logger()
-            >>> logger.info("Test message")
+            >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 155, "Test message", (), None)
+            >>> handler = logger.handlers[0]
+            >>> handler.formatter.format(record)
+            '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:155]: Test message'
         """
         if cls not in cls._loggers:
             logger_name = f"{cls.__module__}.{cls.__name__}"
@@ -159,11 +197,17 @@ class LoggingMixin:
             Configured logger instance for the object.
 
         Example:
+            >>> from ds_common_logger_py_lib import LoggingMixin, Logger
+            >>> import logging
+            >>> Logger()
             >>> class MyClass(LoggingMixin):
             ...     log_level = logging.DEBUG
             ...     def do_something(self):
             ...         self.log.info("Doing something")
             >>> instance = MyClass()
-            >>> instance.log.info("Test message")
+            >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 180, "Test message", (), None)
+            >>> handler = instance.log.handlers[0]
+            >>> handler.formatter.format(record)
+            '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:180]: Test message'
         """
         return self.__class__._get_logger()

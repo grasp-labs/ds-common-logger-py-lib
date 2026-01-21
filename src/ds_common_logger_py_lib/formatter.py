@@ -9,21 +9,21 @@ Defines a custom logging formatter that appends non-standard LogRecord fields
 
 Example
 -------
-.. code-block:: python
-
-    import logging
-
-    from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
-
-    formatter = ExtraFieldsFormatter()
-    handler = logging.StreamHandler()
-    handler.setFormatter(formatter)
-
-    logger = logging.getLogger("test")
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-
-    logger.info("Test message", extra={"user_id": 123})
+    >>> import logging
+    >>> from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
+    >>>
+    >>> formatter = ExtraFieldsFormatter()
+    >>> handler = logging.StreamHandler()
+    >>> handler.setFormatter(formatter)
+    >>>
+    >>> logger = logging.getLogger("test")
+    >>> logger.addHandler(handler)
+    >>> logger.setLevel(logging.INFO)
+    >>>
+    >>> record = logging.LogRecord("test", logging.INFO, "formatter.py", 26, "Test message", (), None)
+    >>> record.user_id = 123
+    >>> formatter.format(record)
+    '[2024-01-15T10:30:45][test][INFO][formatter.py:26]: Test message | extra: {"user_id": 123}'
 """
 
 import json
@@ -39,20 +39,29 @@ class ExtraFieldsFormatter(logging.Formatter):
     extra fields passed via the extra parameter in logging calls. Extra fields
     are serialized as JSON and appended to the log message.
 
+    The formatter also supports template variables in format strings, such as
+    {app_prefix}, which are replaced at runtime with values from the LoggerConfig.
+
     Args:
-        fmt: Format string for the log message.
+        fmt: Format string for the log message. May contain template variables
+             like {app_prefix} that will be replaced at runtime.
         datefmt: Date format string.
+        template_vars: Optional dictionary of template variables to replace in
+                     the format string (e.g., {"app_prefix": "MyApp"}).
 
     Returns:
-        Formatter instance that handles extra fields.
+        Formatter instance that handles extra fields and template variables.
 
     Example:
-        >>> formatter = ExtraFieldsFormatter()
-        >>> handler = logging.StreamHandler()
-        >>> handler.setFormatter(formatter)
-        >>> logger = logging.getLogger("test")
-        >>> logger.addHandler(handler)
-        >>> logger.info("Test message", extra={"user_id": 123})
+        >>> import logging
+        >>> formatter = ExtraFieldsFormatter(
+        ...     fmt="[%(asctime)s][{prefix}][%(name)s]: %(message)s",
+        ...     template_vars={"prefix": "MyApp"}
+        ... )
+        >>> record = logging.LogRecord("test", logging.INFO, "formatter.py", 64, "Test message", (), None)
+        >>> record.user_id = 123
+        >>> formatter.format(record)
+        '[2024-01-15T10:30:45][MyApp][test]: Test message | extra: {"user_id": 123}'
     """
 
     _STANDARD_ATTRS: ClassVar[set[str]] = {
@@ -81,6 +90,42 @@ class ExtraFieldsFormatter(logging.Formatter):
         "asctime",
     }
 
+    def __init__(
+        self,
+        fmt: str | None = None,
+        datefmt: str | None = None,
+        template_vars: dict[str, str] | None = None,
+    ) -> None:
+        """
+        Initialize the formatter with optional template variables.
+
+        Args:
+            fmt: Format string for the log message.
+            datefmt: Date format string.
+            template_vars: Optional dictionary of template variables to replace.
+        """
+        super().__init__(fmt, datefmt)
+        self.template_vars = template_vars or {}
+        self._resolved_fmt: str | None = None
+
+    def _resolve_template(self, fmt: str) -> str:
+        """
+        Resolve template variables in the format string.
+
+        Args:
+            fmt: Format string with potential template variables.
+
+        Returns:
+            Format string with template variables replaced.
+        """
+        if not self.template_vars:
+            return fmt
+
+        resolved = fmt
+        for key, value in self.template_vars.items():
+            resolved = resolved.replace(f"{{{key}}}", str(value))
+        return resolved
+
     def format(self, record: logging.LogRecord) -> str:
         """
         Format the log record, including extra fields.
@@ -99,7 +144,15 @@ class ExtraFieldsFormatter(logging.Formatter):
             >>> "user_id" in formatted
             True
         """
-        msg = super().format(record)
+        if self.template_vars and self._fmt:
+            resolved_fmt = self._resolve_template(self._fmt)
+            if resolved_fmt != self._fmt:
+                temp_formatter = logging.Formatter(resolved_fmt, self.datefmt)
+                msg = temp_formatter.format(record)
+            else:
+                msg = super().format(record)
+        else:
+            msg = super().format(record)
 
         extra_fields = {key: value for key, value in record.__dict__.items() if key not in self._STANDARD_ATTRS}
 
