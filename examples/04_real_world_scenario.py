@@ -9,9 +9,14 @@ each service logs independently via ``LoggingMixin`` to make the overall flow
 easier to trace.
 """
 
-from ds_common_logger_py_lib import Logger, LoggingMixin
+import logging
+from ds_common_logger_py_lib import LoggingMixin, LoggerConfig
 
-Logger()
+LoggerConfig.configure(
+    level=logging.DEBUG,
+    format_string="[%(asctime)s][%(name)s][{prefix}][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s",
+    date_format="%Y-%m-%dT%H:%M:%S",
+)
 
 
 class InventoryService(LoggingMixin):

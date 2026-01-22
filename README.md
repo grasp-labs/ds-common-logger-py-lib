@@ -114,6 +114,7 @@ uv run pytest tests/test_example.py -v
 │       ├── core.py                  # Logger class
 │       ├── formatter.py             # ExtraFieldsFormatter class
 │       ├── mixin.py                 # LoggingMixin class
+│       ├── config.py                # LoggerConfig class
 │       └── __init__.py              # Package initialization
 ├── .pre-commit-config.yaml   # Pre-commit hooks configuration
 ├── tests/                    # Test files
@@ -121,7 +122,6 @@ uv run pytest tests/test_example.py -v
 ├── LICENSE-APACHE            # License file
 ├── pyproject.toml            # Project configuration
 ├── Makefile                  # Development commands
-├── VERSION.txt               # Version file
 ├── codecov.yaml              # Codecov configuration
 ├── CONTRIBUTING.md           # Contribution guidelines
 ├── PyPI.md                   # PyPI publishing guide

@@ -12,7 +12,8 @@ import logging
 import unittest
 from unittest import TestCase
 
-from ds_common_logger_py_lib import Logger, LoggingMixin
+from ds_common_logger_py_lib import Logger, LoggerConfig, LoggingMixin
+from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
 
 
 class TestLoggingMixin(TestCase):
@@ -20,9 +21,23 @@ class TestLoggingMixin(TestCase):
 
     def setUp(self) -> None:
         """Set up test fixtures."""
+        # Reset LoggerConfig
+        LoggerConfig._configured = False
+        LoggerConfig._prefix = ""
+        LoggerConfig._format_string = None
+        LoggerConfig._date_format = None
+        LoggerConfig._level = logging.INFO
+        LoggerConfig._handlers = []
+        LoggerConfig._default_handler = None
+
         Logger()
         # Clear any existing loggers
         LoggingMixin._loggers.clear()
+
+        # Reset root logger
+        root_logger = logging.getLogger()
+        root_logger.handlers.clear()
+        root_logger.setLevel(logging.NOTSET)
 
     def test_mixin_instance_log_property(self) -> None:
         """Test that LoggingMixin provides log property on instances."""
@@ -210,6 +225,33 @@ class TestLoggingMixin(TestCase):
         self.assertIsNotNone(formatter)
         if formatter is not None:
             self.assertEqual(formatter._fmt, custom_format)
+
+    # ========================================================================
+    # LoggingMixin with LoggerConfig Integration Tests
+    # ========================================================================
+
+    def test_mixin_with_logger_config(self) -> None:
+        """Test LoggingMixin with LoggerConfig configured."""
+        LoggerConfig.configure(prefix="TestApp", level=logging.DEBUG)
+
+        class TestService(LoggingMixin):
+            pass
+
+        service = TestService()
+        self.assertEqual(service.log.level, logging.DEBUG)
+        handler = service.log.handlers[0]
+        if isinstance(handler.formatter, ExtraFieldsFormatter):
+            self.assertEqual(handler.formatter.template_vars.get("prefix"), "TestApp")
+
+    def test_mixin_without_logger_config(self) -> None:
+        """Test LoggingMixin works when LoggerConfig not configured."""
+
+        class TestService(LoggingMixin):
+            pass
+
+        service = TestService()
+        self.assertIsNotNone(service.log)
+        self.assertGreater(len(service.log.handlers), 0)
 
 
 if __name__ == "__main__":

@@ -8,10 +8,14 @@ Example script showing how to control log levels with ``LoggingMixin`` using
 class defaults, runtime updates, and per-call overrides.
 """
 
-from ds_common_logger_py_lib import Logger, LoggingMixin
+from ds_common_logger_py_lib import LoggingMixin, LoggerConfig
 import logging
 
-Logger()
+LoggerConfig.configure(
+    level=logging.DEBUG,
+    format_string="[%(asctime)s][%(name)s][{prefix}][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s",
+    date_format="%Y-%m-%dT%H:%M:%S",
+)
 
 
 class VerboseService(LoggingMixin):

@@ -26,9 +26,10 @@ Example
 
 from importlib.metadata import version
 
+from .config import LoggerConfig
 from .core import Logger
 from .mixin import LoggingMixin
 
 __version__ = version("ds_common_logger_py_lib")
 
-__all__ = ["Logger", "LoggingMixin", "__version__"]
+__all__ = ["Logger", "LoggerConfig", "LoggingMixin", "__version__"]

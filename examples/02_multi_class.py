@@ -8,7 +8,10 @@ Example script demonstrating per-class loggers via ``LoggingMixin`` across
 multiple services.
 """
 
-from ds_common_logger_py_lib import LoggingMixin
+from ds_common_logger_py_lib import LoggingMixin, Logger
+
+
+Logger()
 
 
 class UserService(LoggingMixin):
