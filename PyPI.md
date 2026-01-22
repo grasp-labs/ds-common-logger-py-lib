@@ -24,6 +24,8 @@ uv pip install ds-common-logger-py-lib
 - **Class-Based Loggers**: `LoggingMixin` provides automatic logger setup for classes
 - **Per-Class Isolation**: Each class gets its own logger instance
   with distinct names
+- **Application Configuration**: `LoggerConfig` for application-level prefix
+  and format setup
 - **Flexible Configuration**: Set log levels at class level, instance level, or per-call
 - **Customizable Format**: Override default log format using `set_log_format()` method
 - **Custom Formatter**: Includes extra fields in JSON format for better log parsing
@@ -62,6 +64,27 @@ class UserService(LoggingMixin):
 # Use the service
 service = UserService()
 service.create_user("alice")
+```
+
+### Application Configuration
+
+```python
+from ds_common_logger_py_lib import LoggerConfig, Logger
+import logging
+
+# Configure at application startup
+LoggerConfig.configure(
+    prefix="MyApp",
+    format_string="[%(asctime)s][{prefix}][%(name)s][%(levelname)s]: %(message)s",
+    level=logging.INFO
+)
+
+logger = Logger.get_logger(__name__)
+logger.info("Application started")
+
+# Update prefix at runtime
+LoggerConfig.set_prefix("MyApp-session123")
+logger.info("Session initialized")
 ```
 
 ## Usage Examples
