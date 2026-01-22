@@ -38,9 +38,8 @@ class LoggerFilter(logging.Filter):
 
         Args:
             allowed_prefixes: Set of logger name prefixes to allow.
-                            If None, no filtering is applied (all logs allowed).
-                            If empty set, only library-created loggers are allowed.
-                            Otherwise, only logs matching the prefixes are allowed.
+                            If None or empty set, only library-created loggers are allowed.
+                            Otherwise, library loggers plus logs matching the prefixes are allowed.
         """
         super().__init__()
         self.allowed_prefixes = allowed_prefixes
@@ -50,9 +49,8 @@ class LoggerFilter(logging.Filter):
         Filter log records - return True to allow, False to exclude.
 
         Loggers created via Logger.get_logger() or LoggingMixin are automatically allowed.
-        If allowed_prefixes is None, all logs are allowed (no filtering).
-        If allowed_prefixes is an empty set, only library-created loggers are allowed.
-        Otherwise, only logs whose name starts with (or equals) an allowed prefix are allowed.
+        If allowed_prefixes is None or empty, only library-created loggers are allowed.
+        Otherwise, library loggers plus logs whose name starts with (or equals) an allowed prefix are allowed.
 
         Args:
             record: The log record to filter.
@@ -65,10 +63,7 @@ class LoggerFilter(logging.Filter):
         if logger_name in LoggerConfig._library_loggers:
             return True
 
-        if self.allowed_prefixes is None:
-            return True
-
-        if not self.allowed_prefixes:
+        if self.allowed_prefixes is None or not self.allowed_prefixes:
             return False
 
         return any(logger_name.startswith(prefix) or logger_name == prefix for prefix in self.allowed_prefixes)
@@ -107,7 +102,7 @@ class LoggerConfig:
     _level: int = logging.INFO
     _handlers: ClassVar[list[logging.Handler]] = []
     _default_handler: logging.Handler | None = None
-    _filter: LoggerFilter = LoggerFilter(allowed_prefixes=set())
+    _filter: LoggerFilter = LoggerFilter()
     _original_add_handler: ClassVar[Callable[[logging.Logger, logging.Handler], None] | None] = None
     _library_loggers: ClassVar[set[str]] = set()
 
@@ -141,7 +136,7 @@ class LoggerConfig:
             default_handler: Single default handler to use for all loggers. If provided,
                            this replaces the default StreamHandler.
             allowed_prefixes: Set of logger name prefixes to allow in addition to
-                            library-created loggers. Default is empty set, which means only
+                            library-created loggers. Default is None, which means only
                             loggers created via Logger.get_logger() or LoggingMixin are allowed.
                             To include third-party library logs, add their prefixes:
                             {"sqlalchemy", "boto3"} to see SQLAlchemy and boto3 logs.
@@ -174,9 +169,6 @@ class LoggerConfig:
             cls._date_format = date_format
 
         cls._level = level
-
-        if allowed_prefixes is None:
-            allowed_prefixes = set()
         cls._filter = LoggerFilter(allowed_prefixes=allowed_prefixes)
 
         if default_handler is not None:

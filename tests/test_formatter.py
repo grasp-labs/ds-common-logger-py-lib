@@ -41,6 +41,7 @@ class TestFormatter(TestCase):
         self.logger = logging.getLogger("test_formatter")
         self.logger.handlers.clear()
         self.logger.addHandler(self.handler)
+        self.handler.filters = [f for f in self.handler.filters if not isinstance(f, LoggerFilter)]
         self.logger.setLevel(logging.INFO)
 
     def tearDown(self) -> None:
@@ -144,6 +145,7 @@ class TestFormatter(TestCase):
         handler.setFormatter(formatter)
         logger = logging.getLogger("test_template")
         logger.addHandler(handler)
+        handler.filters = [f for f in handler.filters if not isinstance(f, LoggerFilter)]
         logger.setLevel(logging.INFO)
 
         logger.info("Test message")
