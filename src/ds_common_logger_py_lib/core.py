@@ -15,15 +15,12 @@ Example
     >>>
     >>> Logger()
     >>> logger = Logger.get_logger(__name__)
-    >>> record = logging.LogRecord("__main__", logging.INFO, "core.py", 18, "Hello, world!", (), None)
-    >>> handler = logger.handlers[0]
-    >>> handler.formatter.format(record)
-    '[2024-01-15T10:30:45][__main__][INFO][core.py:18]: Hello, world!'
+    >>> logger.info("Hello, world!")
+    [2024-01-15T10:30:45][__main__][INFO][core.py:18]: Hello, world!
     >>>
     >>> Logger.set_log_format("%(levelname)s: %(message)s")
-    >>> record2 = logging.LogRecord("__main__", logging.INFO, "core.py", 22, "Custom format message", (), None)
-    >>> handler.formatter.format(record2)
-    'INFO: Custom format message'
+    >>> logger.info("Custom format message")
+    INFO: Custom format message
 """
 
 from __future__ import annotations
@@ -56,15 +53,12 @@ class Logger:
     Example:
         >>> Logger(level=logging.DEBUG)
         >>> logger = Logger.get_logger(__name__)
-        >>> record = logging.LogRecord("__main__", logging.INFO, "core.py", 59, "Test message", (), None)
-        >>> handler = logger.handlers[0]
-        >>> handler.formatter.format(record)
-        '[2024-01-15T10:30:45][__main__][INFO][core.py:59]: Test message'
+        >>> logger.info("Test message")
+        [2024-01-15T10:30:45][__main__][INFO][core.py:59]: Test message
         >>>
         >>> Logger.set_log_format("%(levelname)s: %(message)s")
-        >>> record2 = logging.LogRecord("__main__", logging.INFO, "core.py", 63, "Formatted message", (), None)
-        >>> handler.formatter.format(record2)
-        'INFO: Formatted message'
+        >>> logger.info("Formatted message")
+        INFO: Formatted message
         >>>
         >>> Logger(level=logging.INFO, handlers=[logging.FileHandler("app.log")])
         >>> Logger(level=logging.DEBUG, force=True)
@@ -99,10 +93,8 @@ class Logger:
         Example:
             >>> Logger(level=logging.DEBUG)
             >>> logger = Logger.get_logger(__name__)
-            >>> record = logging.LogRecord("__main__", logging.DEBUG, "core.py", 100, "Debug message", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][__main__][DEBUG][core.py:100]: Debug message'
+            >>> logger.debug("Debug message")
+            [2024-01-15T10:30:45][__main__][DEBUG][core.py:100]: Debug message
             >>>
             >>> Logger(handlers=[logging.FileHandler("app.log")])
             >>> Logger(level=logging.INFO, force=True)
@@ -160,6 +152,9 @@ class Logger:
             handler = logging.StreamHandler(sys.stdout)
             handler.setLevel(level)
             handler.setFormatter(LoggerConfig._create_formatter())
+            # Apply filter if one is configured
+            if LoggerConfig._filter:
+                handler.addFilter(LoggerConfig._filter)
             return handler
 
         handler = logging.StreamHandler(sys.stdout)
@@ -188,10 +183,8 @@ class Logger:
             >>> Logger()
             >>> Logger.set_log_format("%(levelname)s: %(message)s")
             >>> logger = Logger.get_logger(__name__)
-            >>> record = logging.LogRecord("__main__", logging.INFO, "core.py", 188, "This will use the custom format", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            'INFO: This will use the custom format'
+            >>> logger.info("This will use the custom format")
+            INFO: This will use the custom format
         """
         if format_string is not None:
             Logger._active_format = format_string
@@ -328,13 +321,13 @@ class Logger:
         Example:
             >>> Logger()
             >>> logger = Logger.get_logger(__name__)
-            >>> record = logging.LogRecord("__main__", logging.INFO, "core.py", 232, "Test message", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][__main__][INFO][core.py:232]: Test message'
+            >>> logger.info("Test message")
+            [2024-01-15T10:30:45][__main__][INFO][core.py:232]: Test message
         """
         logger = logging.getLogger(name)
         root_logger = logging.getLogger()
+
+        LoggerConfig.register_library_logger(name)
 
         effective_level = Logger._determine_effective_level(level, root_logger)
         logger.setLevel(effective_level)

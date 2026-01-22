@@ -20,14 +20,13 @@ Example
     >>> logger.addHandler(handler)
     >>> logger.setLevel(logging.INFO)
     >>>
-    >>> record = logging.LogRecord("test", logging.INFO, "formatter.py", 26, "Test message", (), None)
-    >>> record.user_id = 123
-    >>> formatter.format(record)
-    '[2024-01-15T10:30:45][test][INFO][formatter.py:26]: Test message | extra: {"user_id": 123}'
+    >>> logger.info("Test message", extra={"user_id": 123})
+    [2024-01-15T10:30:45][test][INFO][formatter.py:26]: Test message | extra: {"user_id": 123}
 """
 
 import json
 import logging
+import re
 from typing import ClassVar
 
 
@@ -58,10 +57,13 @@ class ExtraFieldsFormatter(logging.Formatter):
         ...     fmt="[%(asctime)s][{prefix}][%(name)s]: %(message)s",
         ...     template_vars={"prefix": "MyApp"}
         ... )
-        >>> record = logging.LogRecord("test", logging.INFO, "formatter.py", 64, "Test message", (), None)
-        >>> record.user_id = 123
-        >>> formatter.format(record)
-        '[2024-01-15T10:30:45][MyApp][test]: Test message | extra: {"user_id": 123}'
+        >>> handler = logging.StreamHandler()
+        >>> handler.setFormatter(formatter)
+        >>> logger = logging.getLogger("test")
+        >>> logger.addHandler(handler)
+        >>> logger.setLevel(logging.INFO)
+        >>> logger.info("Test message", extra={"user_id": 123})
+        [2024-01-15T10:30:45][MyApp][test]: Test message | extra: {"user_id": 123}
     """
 
     _STANDARD_ATTRS: ClassVar[set[str]] = {
@@ -111,6 +113,8 @@ class ExtraFieldsFormatter(logging.Formatter):
     def _resolve_template(self, fmt: str) -> str:
         """
         Resolve template variables in the format string.
+        Remove empty bracket pairs: [] and optional space after it
+        This handles patterns like "[] " or "[]" at the start/middle/end of format string
 
         Args:
             fmt: Format string with potential template variables.
@@ -124,6 +128,11 @@ class ExtraFieldsFormatter(logging.Formatter):
         resolved = fmt
         for key, value in self.template_vars.items():
             resolved = resolved.replace(f"{{{key}}}", str(value))
+
+        resolved = re.sub(r"\[\]\s*", "", resolved)
+        resolved = re.sub(r"  +", " ", resolved)
+        if resolved.startswith(" "):
+            resolved = resolved[1:]
         return resolved
 
     def format(self, record: logging.LogRecord) -> str:
@@ -137,12 +146,15 @@ class ExtraFieldsFormatter(logging.Formatter):
             Formatted log message string with extra fields appended if present.
 
         Example:
+            >>> import logging
             >>> formatter = ExtraFieldsFormatter()
-            >>> record = logging.LogRecord("test", logging.INFO, "test.py", 1, "Test", (), None)
-            >>> record.user_id = 123
-            >>> formatted = formatter.format(record)
-            >>> "user_id" in formatted
-            True
+            >>> handler = logging.StreamHandler()
+            >>> handler.setFormatter(formatter)
+            >>> logger = logging.getLogger("test")
+            >>> logger.addHandler(handler)
+            >>> logger.setLevel(logging.INFO)
+            >>> logger.info("Test", extra={"user_id": 123})
+            [2024-01-15T10:30:45][test][INFO][test.py:1]: Test | extra: {"user_id": 123}
         """
         if self.template_vars and self._fmt:
             resolved_fmt = self._resolve_template(self._fmt)

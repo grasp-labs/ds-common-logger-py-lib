@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import sys
+from collections.abc import Callable
 from typing import ClassVar
 
 from .formatter import ExtraFieldsFormatter
@@ -18,6 +19,59 @@ from .formatter import ExtraFieldsFormatter
 DEFAULT_FORMAT = "[%(asctime)s][%(name)s][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s"
 DEFAULT_FORMAT_WITH_PREFIX = "[%(asctime)s][{prefix}][%(name)s][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s"
 DEFAULT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+
+
+class LoggerFilter(logging.Filter):
+    """
+    Filter to only allow logs from specified logger name prefixes.
+
+    Simple whitelist approach: if a logger name starts with (or equals) any
+    allowed prefix, it's allowed. Everything else is filtered out.
+
+    Loggers created via Logger.get_logger() or LoggingMixin are automatically
+    allowed, regardless of allowed_prefixes.
+    """
+
+    def __init__(self, allowed_prefixes: set[str] | None = None) -> None:
+        """
+        Initialize the filter.
+
+        Args:
+            allowed_prefixes: Set of logger name prefixes to allow.
+                            If None, no filtering is applied (all logs allowed).
+                            If empty set, only library-created loggers are allowed.
+                            Otherwise, only logs matching the prefixes are allowed.
+        """
+        super().__init__()
+        self.allowed_prefixes = allowed_prefixes
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """
+        Filter log records - return True to allow, False to exclude.
+
+        Loggers created via Logger.get_logger() or LoggingMixin are automatically allowed.
+        If allowed_prefixes is None, all logs are allowed (no filtering).
+        If allowed_prefixes is an empty set, only library-created loggers are allowed.
+        Otherwise, only logs whose name starts with (or equals) an allowed prefix are allowed.
+
+        Args:
+            record: The log record to filter.
+
+        Returns:
+            True if the log should be shown, False if it should be excluded.
+        """
+        logger_name = record.name
+
+        if logger_name in LoggerConfig._library_loggers:
+            return True
+
+        if self.allowed_prefixes is None:
+            return True
+
+        if not self.allowed_prefixes:
+            return False
+
+        return any(logger_name.startswith(prefix) or logger_name == prefix for prefix in self.allowed_prefixes)
 
 
 class LoggerConfig:
@@ -38,15 +92,12 @@ class LoggerConfig:
         ...     level=logging.INFO
         ... )
         >>> logger = Logger.get_logger(__name__)
-        >>> record = logging.LogRecord("__main__", logging.INFO, "config.py", 41, "Application started", (), None)
-        >>> handler = logger.handlers[0]
-        >>> handler.formatter.format(record)
-        '[2024-01-15T10:30:45][MyApp][__main__][INFO]: Application started'
+        >>> logger.info("Application started")
+        [2024-01-15T10:30:45][MyApp][__main__][INFO]: Application started
         >>>
         >>> LoggerConfig.set_prefix("MyApp-session123")
-        >>> record2 = logging.LogRecord("__main__", logging.INFO, "config.py", 45, "Session initialized", (), None)
-        >>> handler.formatter.format(record2)
-        '[2024-01-15T10:30:46][MyApp-session123][__main__][INFO]: Session initialized'
+        >>> logger.info("Session initialized")
+        [2024-01-15T10:30:46][MyApp-session123][__main__][INFO]: Session initialized
     """
 
     _configured: bool = False
@@ -56,6 +107,9 @@ class LoggerConfig:
     _level: int = logging.INFO
     _handlers: ClassVar[list[logging.Handler]] = []
     _default_handler: logging.Handler | None = None
+    _filter: LoggerFilter = LoggerFilter(allowed_prefixes=set())
+    _original_add_handler: ClassVar[Callable[[logging.Logger, logging.Handler], None] | None] = None
+    _library_loggers: ClassVar[set[str]] = set()
 
     @classmethod
     def configure(
@@ -66,6 +120,7 @@ class LoggerConfig:
         level: int = logging.INFO,
         handlers: list[logging.Handler] | None = None,
         default_handler: logging.Handler | None = None,
+        allowed_prefixes: set[str] | None = None,
         force: bool = False,
     ) -> None:
         """
@@ -85,6 +140,11 @@ class LoggerConfig:
             handlers: List of handlers to add to all loggers. If None, uses default StreamHandler.
             default_handler: Single default handler to use for all loggers. If provided,
                            this replaces the default StreamHandler.
+            allowed_prefixes: Set of logger name prefixes to allow in addition to
+                            library-created loggers. Default is empty set, which means only
+                            loggers created via Logger.get_logger() or LoggingMixin are allowed.
+                            To include third-party library logs, add their prefixes:
+                            {"sqlalchemy", "boto3"} to see SQLAlchemy and boto3 logs.
             force: If True, force reconfiguration even if already configured.
 
         Example:
@@ -96,10 +156,8 @@ class LoggerConfig:
             ...     level=logging.DEBUG
             ... )
             >>> logger = Logger.get_logger(__name__)
-            >>> record = logging.LogRecord("__main__", logging.INFO, "config.py", 94, "Service started", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][MyService][__main__]: Service started'
+            >>> logger.info("Service started")
+            [2024-01-15T10:30:45][MyService][__main__]: Service started
         """
         if cls._configured and not force:
             return
@@ -117,6 +175,10 @@ class LoggerConfig:
 
         cls._level = level
 
+        if allowed_prefixes is None:
+            allowed_prefixes = set()
+        cls._filter = LoggerFilter(allowed_prefixes=allowed_prefixes)
+
         if default_handler is not None:
             cls._default_handler = default_handler
         elif handlers is not None:
@@ -126,6 +188,8 @@ class LoggerConfig:
             cls._default_handler = logging.StreamHandler(sys.stdout)
             cls._default_handler.setLevel(level)
             cls._handlers = []
+
+        cls._setup_filter()
 
         root_logger = logging.getLogger()
         root_logger.setLevel(level)
@@ -162,16 +226,13 @@ class LoggerConfig:
             >>> import logging
             >>> LoggerConfig.set_prefix("MyApp")
             >>> logger = Logger.get_logger(__name__)
-            >>> record = logging.LogRecord("__main__", logging.INFO, "config.py", 158, "Log with MyApp prefix", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][MyApp][__main__][INFO][config.py:158]: Log with MyApp prefix'
+            >>> logger.info("Log with MyApp prefix")
+            [2024-01-15T10:30:45][MyApp][__main__][INFO][config.py:158]: Log with MyApp prefix
             >>>
             >>> session_id = "session_12345"
             >>> LoggerConfig.set_prefix(f"[{session_id}]")
-            >>> record2 = logging.LogRecord("__main__", logging.INFO, "config.py", 162, "Log with session prefix", (), None)
-            >>> handler.formatter.format(record2)
-            '[2024-01-15T10:30:46][session_12345][__main__][INFO][config.py:162]: Log with session prefix'
+            >>> logger.info("Log with session prefix")
+            [2024-01-15T10:30:46][session_12345][__main__][INFO][config.py:162]: Log with session prefix
         """
         if not cls._configured:
             cls.configure(prefix=prefix, format_string=DEFAULT_FORMAT_WITH_PREFIX)
@@ -199,6 +260,8 @@ class LoggerConfig:
         """
         if not cls._configured:
             raise RuntimeError("LoggerConfig must be configured before adding handlers")
+
+        handler.addFilter(cls._filter)
 
         cls._handlers.append(handler)
         root_logger = logging.getLogger()
@@ -273,6 +336,8 @@ class LoggerConfig:
         cls._default_handler = handler
         handler.setLevel(cls._level)
 
+        handler.addFilter(cls._filter)
+
         formatter = cls._create_formatter()
         handler.setFormatter(formatter)
 
@@ -285,14 +350,36 @@ class LoggerConfig:
                 logger.addHandler(handler)
 
     @classmethod
+    def _setup_filter(cls) -> None:
+        """Apply filter to existing handlers and patch Logger.addHandler to auto-apply filter to new handlers."""
+        if cls._default_handler:
+            cls._default_handler.addFilter(cls._filter)
+        for handler in cls._handlers:
+            handler.addFilter(cls._filter)
+
+        if cls._original_add_handler is None:
+            cls._original_add_handler = logging.Logger.addHandler
+
+            def add_handler_with_filter(self: logging.Logger, hdlr: logging.Handler) -> None:
+                """Wrapper that applies filter to handlers when they're added."""
+                hdlr.filters = [f for f in hdlr.filters if not isinstance(f, LoggerFilter)]
+                hdlr.addFilter(cls._filter)
+                if cls._original_add_handler:
+                    cls._original_add_handler(self, hdlr)
+
+            logging.Logger.addHandler = add_handler_with_filter  # type: ignore[method-assign]
+
+    @classmethod
     def _create_formatter(cls) -> ExtraFieldsFormatter:
-        """Create a formatter with current configuration."""
+        """Create a formatter with current configuration.
+
+        Returns:
+            ExtraFieldsFormatter instance with current configuration.
+        """
         format_string = cls._format_string or DEFAULT_FORMAT
         date_format = cls._date_format or DEFAULT_DATE_FORMAT
 
-        template_vars = {}
-        if cls._prefix:
-            template_vars["prefix"] = cls._prefix
+        template_vars = {"prefix": cls._prefix}
 
         return ExtraFieldsFormatter(
             fmt=format_string,
@@ -312,23 +399,54 @@ class LoggerConfig:
             for handler in logger.handlers:
                 handler.setFormatter(formatter)
                 handler.setLevel(cls._level)
+                handler.filters = [f for f in handler.filters if not isinstance(f, LoggerFilter)]
+                handler.addFilter(cls._filter)
 
     @classmethod
     def is_configured(cls) -> bool:
-        """Check if LoggerConfig has been configured."""
+        """Check if LoggerConfig has been configured.
+
+        Returns:
+            True if LoggerConfig has been configured, False otherwise.
+        """
         return cls._configured
 
     @classmethod
+    def register_library_logger(cls, logger_name: str) -> None:
+        """
+        Register a logger name as being created by the library.
+
+        This ensures that loggers created via Logger.get_logger() or LoggingMixin
+        are automatically allowed by the filter, regardless of allowed_prefixes.
+
+        Args:
+            logger_name: The name of the logger to register.
+        """
+        cls._library_loggers.add(logger_name)
+
+    @classmethod
     def get_prefix(cls) -> str:
-        """Get the configured prefix."""
+        """Get the configured prefix.
+
+        Returns:
+            The configured prefix.
+        """
         return cls._prefix
 
     @classmethod
     def get_format_string(cls) -> str | None:
-        """Get the configured format string."""
+        """Get the configured format string.
+
+        Returns:
+            The configured format string.
+        """
         return cls._format_string
 
     @classmethod
     def get_date_format(cls) -> str | None:
-        """Get the configured date format."""
+        """Get the configured date format.
+
+        Returns:
+            The configured date format.
+        """
         return cls._date_format
