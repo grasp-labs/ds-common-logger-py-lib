@@ -379,7 +379,7 @@ class LoggerConfig:
         format_string = cls._format_string or DEFAULT_FORMAT
         date_format = cls._date_format or DEFAULT_DATE_FORMAT
 
-        template_vars = {"prefix": cls._prefix}
+        template_vars: dict[str, str] = {"prefix": cls._prefix}
 
         return ExtraFieldsFormatter(
             fmt=format_string,
