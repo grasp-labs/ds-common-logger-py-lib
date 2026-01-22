@@ -51,8 +51,8 @@ class LoggerConfig:
 
     _configured: bool = False
     _prefix: str = ""
-    _format_string: str | None = None
-    _date_format: str | None = None
+    _format_string: str = DEFAULT_FORMAT_WITH_PREFIX
+    _date_format: str = DEFAULT_DATE_FORMAT
     _level: int = logging.INFO
     _handlers: ClassVar[list[logging.Handler]] = []
     _default_handler: logging.Handler | None = None
@@ -61,8 +61,8 @@ class LoggerConfig:
     def configure(
         cls,
         prefix: str = "",
-        format_string: str | None = None,
-        date_format: str | None = None,
+        format_string: str = DEFAULT_FORMAT_WITH_PREFIX,
+        date_format: str = DEFAULT_DATE_FORMAT,
         level: int = logging.INFO,
         handlers: list[logging.Handler] | None = None,
         default_handler: logging.Handler | None = None,
@@ -78,9 +78,9 @@ class LoggerConfig:
         Args:
             prefix: Prefix to inject into log messages (via {prefix} in format).
                    Can be updated later with set_prefix().
-            format_string: Format string for log messages. Use {prefix} to include the prefix.
-                          If None, uses DEFAULT_FORMAT.
-            date_format: Date format string. If None, uses Logger.DEFAULT_DATE_FORMAT.
+            format_string: Format string for log messages. Uses {prefix} to include the prefix.
+                          Uses DEFAULT_FORMAT_WITH_PREFIX by default.
+            date_format: Date format string. Uses DEFAULT_DATE_FORMAT by default.
             level: Default logging level.
             handlers: List of handlers to add to all loggers. If None, uses default StreamHandler.
             default_handler: Single default handler to use for all loggers. If provided,
