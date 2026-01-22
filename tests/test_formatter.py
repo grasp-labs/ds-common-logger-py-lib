@@ -173,7 +173,7 @@ class TestFormatter(TestCase):
         """Test format() with template variable having non-string value (converted to str)."""
         formatter = ExtraFieldsFormatter(
             fmt="[{prefix}] %(message)s",
-            template_vars={"prefix": "12345"},  # Test that non-string values are converted
+            template_vars={"prefix": "12345"},
         )
 
         record = logging.LogRecord("test", logging.INFO, "test.py", 1, "Test", (), None)
