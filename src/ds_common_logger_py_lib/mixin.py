@@ -20,15 +20,12 @@ Example
     ...         self.log.info("Doing something")
     >>>
     >>> instance = MyClass()
-    >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 24, "Hello, world!", (), None)
-    >>> handler = instance.log.handlers[0]
-    >>> handler.formatter.format(record)
-    '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:24]: Hello, world!'
+    >>> instance.log.info("Hello, world!")
+    [2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:24]: Hello, world!
     >>>
     >>> MyClass.set_log_format("%(levelname)s: %(message)s")
-    >>> record2 = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 26, "Formatted message", (), None)
-    >>> handler.formatter.format(record2)
-    'INFO: Formatted message'
+    >>> instance.log.info("Formatted message")
+    INFO: Formatted message
 """
 
 from __future__ import annotations
@@ -58,10 +55,8 @@ class LoggingMixin:
         ...     def do_something(self):
         ...         self.log.info("Doing something")
         >>> instance = MyClass()
-        >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 59, "Test message", (), None)
-        >>> handler = instance.log.handlers[0]
-        >>> handler.formatter.format(record)
-        '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:59]: Test message'
+        >>> instance.log.info("Test message")
+        [2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:59]: Test message
     """
 
     _loggers: ClassVar[dict[type[LoggingMixin], logging.Logger]] = {}
@@ -86,10 +81,8 @@ class LoggingMixin:
             ...     log_level = logging.DEBUG
             ...     pass
             >>> logger = MyClass.logger()
-            >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 88, "Class-level log", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:88]: Class-level log'
+            >>> logger.info("Class-level log")
+            [2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:88]: Class-level log
         """
         return cls._get_logger(level)
 
@@ -142,13 +135,8 @@ class LoggingMixin:
             ...     pass
             >>> MyClass.set_log_format("%(levelname)s: %(message)s")
             >>> logger = MyClass.logger()
-            >>> record = logging.LogRecord(
-            ...     "__main__.MyClass", logging.INFO, "mixin.py", 130,
-            ...     "This will use the custom format", (), None
-            ... )
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            'INFO: This will use the custom format'
+            >>> logger.info("This will use the custom format")
+            INFO: This will use the custom format
         """
         Logger.set_log_format(format_string, date_format)
         if cls in cls._loggers:
@@ -172,10 +160,8 @@ class LoggingMixin:
             >>> class MyClass(LoggingMixin):
             ...     pass
             >>> logger = MyClass._get_logger()
-            >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 155, "Test message", (), None)
-            >>> handler = logger.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:155]: Test message'
+            >>> logger.info("Test message")
+            [2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:155]: Test message
         """
         if cls not in cls._loggers:
             logger_name = f"{cls.__module__}.{cls.__name__}"
@@ -205,9 +191,7 @@ class LoggingMixin:
             ...     def do_something(self):
             ...         self.log.info("Doing something")
             >>> instance = MyClass()
-            >>> record = logging.LogRecord("__main__.MyClass", logging.INFO, "mixin.py", 180, "Test message", (), None)
-            >>> handler = instance.log.handlers[0]
-            >>> handler.formatter.format(record)
-            '[2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:180]: Test message'
+            >>> instance.log.info("Test message")
+            [2024-01-15T10:30:45][__main__.MyClass][INFO][mixin.py:180]: Test message
         """
         return self.__class__._get_logger()

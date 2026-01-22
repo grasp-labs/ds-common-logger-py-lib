@@ -15,6 +15,8 @@ import unittest
 from unittest import TestCase
 from unittest.mock import patch
 
+from ds_common_logger_py_lib import LoggerConfig
+from ds_common_logger_py_lib.config import LoggerFilter
 from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
 
 
@@ -23,13 +25,29 @@ class TestFormatter(TestCase):
 
     def setUp(self) -> None:
         """Set up test fixtures."""
+        LoggerConfig._configured = False
+        LoggerConfig._filter = LoggerFilter(allowed_prefixes=None)
+        LoggerConfig._library_loggers.clear()
+
+        root_logger = logging.getLogger()
+        root_logger.handlers.clear()
+        root_logger.setLevel(logging.NOTSET)
+
         self.formatter = ExtraFieldsFormatter()
         self.stream = io.StringIO()
         self.handler = logging.StreamHandler(self.stream)
         self.handler.setFormatter(self.formatter)
+
         self.logger = logging.getLogger("test_formatter")
+        self.logger.handlers.clear()
         self.logger.addHandler(self.handler)
+        self.handler.filters = [f for f in self.handler.filters if not isinstance(f, LoggerFilter)]
         self.logger.setLevel(logging.INFO)
+
+    def tearDown(self) -> None:
+        """Clean up after tests."""
+        self.logger.handlers.clear()
+        logging.getLogger("test_template").handlers.clear()
 
     def test_formatter_with_extra_fields(self) -> None:
         """Test formatter includes extra fields in output."""
@@ -127,6 +145,7 @@ class TestFormatter(TestCase):
         handler.setFormatter(formatter)
         logger = logging.getLogger("test_template")
         logger.addHandler(handler)
+        handler.filters = [f for f in handler.filters if not isinstance(f, LoggerFilter)]
         logger.setLevel(logging.INFO)
 
         logger.info("Test message")
@@ -148,14 +167,15 @@ class TestFormatter(TestCase):
         record = logging.LogRecord("test", logging.INFO, "test.py", 1, "Test", (), None)
         formatted = formatter.format(record)
 
-        # Empty prefix should result in [] in output
-        self.assertIn("[]", formatted)
+        # Empty prefix should result in [] being removed from output
+        self.assertNotIn("[]", formatted)
+        self.assertEqual(formatted, "Test")
 
     def test_format_with_template_variable_non_string_value(self) -> None:
         """Test format() with template variable having non-string value (converted to str)."""
         formatter = ExtraFieldsFormatter(
             fmt="[{prefix}] %(message)s",
-            template_vars={"prefix": 12345},
+            template_vars={"prefix": "12345"},
         )
 
         record = logging.LogRecord("test", logging.INFO, "test.py", 1, "Test", (), None)
