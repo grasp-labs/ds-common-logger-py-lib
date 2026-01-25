@@ -20,15 +20,13 @@ uv pip install ds-common-logger-py-lib
 
 ## Features
 
-- **Structured Logging**: Built-in support for extra fields in log messages
-- **Class-Based Loggers**: `LoggingMixin` provides automatic logger setup for classes
-- **Per-Class Isolation**: Each class gets its own logger instance
-  with distinct names
-- **Application Configuration**: `LoggerConfig` for application-level prefix
-  and format setup
-- **Flexible Configuration**: Set log levels at class level, instance level, or per-call
-- **Customizable Format**: Override default log format using `set_log_format()` method
-- **Custom Formatter**: Includes extra fields in JSON format for better log parsing
+- **Structured Logging**: Extra fields included in log output
+- **Logger Helper**: `Logger.configure()` and `Logger.get_logger()` for
+  consistent setup
+- **Application Configuration**: Prefix, format, handlers, and log levels from
+  one place
+- **Flexible Output**: Update formats and prefixes at runtime
+- **Custom Formatter**: Extra fields are JSON-encoded when possible
 - **Standard Library Compatible**: Built on Python's `logging` module
 
 ## Quick Start
@@ -39,7 +37,7 @@ uv pip install ds-common-logger-py-lib
 from ds_common_logger_py_lib import Logger
 
 # Initialize logger configuration
-Logger()
+Logger.configure()
 
 # Get a logger instance
 logger = Logger.get_logger(__name__)
@@ -48,32 +46,14 @@ logger = Logger.get_logger(__name__)
 logger.info("Processing data", extra={"user_id": 123, "action": "process"})
 ```
 
-### Using LoggingMixin
-
-```python
-from ds_common_logger_py_lib import LoggingMixin
-import logging
-
-class UserService(LoggingMixin):
-    log_level = logging.INFO
-
-    def create_user(self, username: str) -> dict:
-        self.log.info("Creating user", extra={"username": username})
-        return {"id": 1, "username": username}
-
-# Use the service
-service = UserService()
-service.create_user("alice")
-```
-
 ### Application Configuration
 
 ```python
-from ds_common_logger_py_lib import LoggerConfig, Logger
+from ds_common_logger_py_lib import Logger
 import logging
 
 # Configure at application startup
-LoggerConfig.configure(
+Logger.configure(
     prefix="MyApp",
     format_string="[%(asctime)s][{prefix}][%(name)s][%(levelname)s]: %(message)s",
     level=logging.INFO
@@ -83,7 +63,7 @@ logger = Logger.get_logger(__name__)
 logger.info("Application started")
 
 # Update prefix at runtime
-LoggerConfig.set_prefix("MyApp-session123")
+Logger.set_prefix("MyApp-session123")
 logger.info("Session initialized")
 ```
 
@@ -92,36 +72,39 @@ logger.info("Session initialized")
 ### Setting Log Levels
 
 ```python
-from ds_common_logger_py_lib import LoggingMixin
+from ds_common_logger_py_lib import Logger
 import logging
 
-class MyService(LoggingMixin):
-    log_level = logging.DEBUG  # Set default level for the class
+Logger.configure(
+    level=logging.DEBUG,
+    logger_levels={
+        "myapp.verbose": logging.DEBUG,
+        "myapp.quiet": logging.WARNING,
+    },
+)
 
-    def process(self):
-        self.log.debug("Debug message")
-        self.log.info("Info message")
+verbose_logger = Logger.get_logger("myapp.verbose")
+quiet_logger = Logger.get_logger("myapp.quiet")
 
-# Or change level at runtime
-MyService.set_log_level(logging.WARNING)
-
-# Or override per call
-logger = MyService.logger(level=logging.DEBUG)
-logger.debug("This will be shown")
+verbose_logger.debug("Debug message is visible")
+quiet_logger.info("Info message is hidden")
+quiet_logger.warning("Warning message is visible")
 ```
 
 ### Multiple Classes with Isolated Loggers
 
 ```python
-from ds_common_logger_py_lib import LoggingMixin
+from ds_common_logger_py_lib import Logger
 
-class UserService(LoggingMixin):
+class UserService:
     def create_user(self, username: str):
-        self.log.info("Creating user", extra={"username": username})
+        logger = Logger.get_logger("services.user")
+        logger.info("Creating user", extra={"username": username})
 
-class OrderService(LoggingMixin):
+class OrderService:
     def create_order(self, user_id: int):
-        self.log.info("Creating order", extra={"user_id": user_id})
+        logger = Logger.get_logger("services.order")
+        logger.info("Creating order", extra={"user_id": user_id})
 
 # Each class has its own logger with distinct names
 user_service = UserService()
@@ -137,7 +120,6 @@ order_service = OrderService()
 Full documentation is available at:
 
 - [GitHub Repository](https://github.com/grasp-labs/ds-common-logger-py-lib)
-- [Documentation Site](https://grasp-labs.github.io/ds-common-logger-py-lib/)
 
 ## Development
 
