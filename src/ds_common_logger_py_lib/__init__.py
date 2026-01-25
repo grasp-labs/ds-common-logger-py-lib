@@ -4,14 +4,15 @@
 
 Description
 -----------
-Package entrypoint that exposes the public API (``Logger``, ``LoggingMixin``)
+Package entrypoint that exposes the public API (``Logger``, ``LoggerFilter``)
 and the installed package version (``__version__``).
 
 Example
 -------
-    >>> from ds_common_logger_py_lib import Logger, LoggerConfig
+    >>> from ds_common_logger_py_lib import Logger
+    >>> import logging
     >>>
-    >>> LoggerConfig.configure(
+    >>> Logger.configure(
     ...     prefix="Application",
     ...     level=logging.DEBUG
     ... )
@@ -19,27 +20,13 @@ Example
     >>>
     >>> logger.info("Hello from ds_common_logger_py_lib")
     [2024-01-15T10:30:45][__main__][INFO][__init__.py:16]: Hello from ds_common_logger_py_lib
-    >>>
-    >>> class Service(LoggingMixin):
-    ...     def foo(self):
-    ...         self.log.info("Hello from Service")
-    ...         self.log.debug("Debug message - only visible with DEBUG level")
-    >>>
-    ...     def bar(self):
-    ...         self.log.debug("Debug message - only visible with DEBUG level")
-    >>>
-    >>> Service().foo()
-    [2024-01-15T10:30:45][__main__.Service][INFO][mixin.py:180]: Hello from Service
-    >>> Service().bar()
-    [2024-01-15T10:30:45][__main__.Service][DEBUG][mixin.py:180]: Debug message - only visible with DEBUG level
 """
 
 from importlib.metadata import version
 
-from .config import LoggerConfig, LoggerFilter
 from .core import Logger
-from .mixin import LoggingMixin
+from .formatter import LoggerFilter
 
 __version__ = version("ds_common_logger_py_lib")
 
-__all__ = ["Logger", "LoggerConfig", "LoggerFilter", "LoggingMixin", "__version__"]
+__all__ = ["Logger", "LoggerFilter", "__version__"]

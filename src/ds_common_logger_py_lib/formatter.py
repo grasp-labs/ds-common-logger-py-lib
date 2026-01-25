@@ -30,6 +30,62 @@ import re
 from typing import ClassVar
 
 
+class LoggerFilter(logging.Filter):
+    """
+    Filter to only allow logs from specified logger name prefixes.
+
+    Simple whitelist approach: if a logger name starts with (or equals) any
+    allowed prefix, it's allowed. Everything else is filtered out.
+
+    Loggers in the managed_loggers set are automatically
+    allowed, regardless of allowed_prefixes.
+    """
+
+    def __init__(
+        self,
+        allowed_prefixes: set[str] | None = None,
+        managed_loggers: set[str] | None = None,
+    ) -> None:
+        """
+        Initialize the filter.
+
+        Args:
+            allowed_prefixes: Set of logger name prefixes to allow.
+                            If None or empty set, only managed loggers are allowed.
+                            Otherwise, managed loggers plus logs matching the prefixes are allowed.
+            managed_loggers: Set of logger names managed by this helper. The filter stores a
+                            reference to this set (not a copy), so updates to the set are
+                            immediately visible to the filter. If None, uses an empty set.
+        """
+        super().__init__()
+        self.allowed_prefixes = allowed_prefixes
+        self.managed_loggers = managed_loggers if managed_loggers is not None else set()
+
+    def filter(self, record: logging.LogRecord) -> bool:
+        """
+        Filter log records - return True to allow, False to exclude.
+
+        Loggers in managed_loggers are automatically allowed.
+        If allowed_prefixes is None or empty, only managed loggers are allowed.
+        Otherwise, managed loggers plus logs whose name starts with (or equals) an allowed prefix are allowed.
+
+        Args:
+            record: The log record to filter.
+
+        Returns:
+            True if the log should be shown, False if it should be excluded.
+        """
+        logger_name = record.name
+
+        if logger_name in self.managed_loggers:
+            return True
+
+        if self.allowed_prefixes is None or not self.allowed_prefixes:
+            return False
+
+        return any(logger_name.startswith(prefix) or logger_name == prefix for prefix in self.allowed_prefixes)
+
+
 class ExtraFieldsFormatter(logging.Formatter):
     """
     Custom formatter that includes extra fields in log output.
@@ -39,14 +95,14 @@ class ExtraFieldsFormatter(logging.Formatter):
     are serialized as JSON and appended to the log message.
 
     The formatter also supports template variables in format strings, such as
-    {app_prefix}, which are replaced at runtime with values from the LoggerConfig.
+    {prefix}, which are replaced at runtime with values provided by the caller.
 
     Args:
         fmt: Format string for the log message. May contain template variables
-             like {app_prefix} that will be replaced at runtime.
+             like {prefix} that will be replaced at runtime.
         datefmt: Date format string.
         template_vars: Optional dictionary of template variables to replace in
-                     the format string (e.g., {"app_prefix": "MyApp"}).
+                     the format string (e.g., {"prefix": "MyApp"}).
 
     Returns:
         Formatter instance that handles extra fields and template variables.
@@ -108,7 +164,6 @@ class ExtraFieldsFormatter(logging.Formatter):
         """
         super().__init__(fmt, datefmt)
         self.template_vars = template_vars or {}
-        self._resolved_fmt: str | None = None
 
     def _resolve_template(self, fmt: str) -> str:
         """
