@@ -1,5 +1,5 @@
 """
-**File:** ``03_logger_isolation.py``
+**File:** ``02_logger_isolation.py``
 **Region:** ``ds_common_logger_py_lib``
 
 Description
@@ -10,56 +10,58 @@ applications.
 """
 
 import logging
-from ds_common_logger_py_lib import LoggingMixin, LoggerConfig
 
-LoggerConfig.configure(
+from ds_common_logger_py_lib import Logger
+
+Logger.configure(
     level=logging.DEBUG,
     format_string="[%(asctime)s][%(name)s][{prefix}][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s",
     date_format="%Y-%m-%dT%H:%M:%S",
 )
 
 
-class DatabaseService(LoggingMixin):
+class DatabaseService:
     """Database operations - verbose logging."""
 
+    def __init__(self):
+        self.logger = Logger.get_logger(f"{__name__}.DatabaseService")
+
     def query(self, sql: str) -> list:
-        self.log.debug("Executing query", extra={"sql": sql})
-        self.log.info("Query executed", extra={"rows": 10})
+        self.logger.debug("Executing query", extra={"sql": sql})
+        self.logger.info("Query executed", extra={"rows": 10})
         return [{"id": 1}, {"id": 2}]
 
 
-class CacheService(LoggingMixin):
+class CacheService:
     """Cache operations - minimal logging."""
 
+    def __init__(self):
+        self.logger = Logger.get_logger(f"{__name__}.CacheService")
+
     def get(self, key: str) -> str | None:
-        self.log.debug("Cache lookup", extra={"key": key})
+        self.logger.debug("Cache lookup", extra={"key": key})
         return "cached_value"
 
     def set(self, key: str, value: str) -> None:
-        self.log.debug("Cache set", extra={"key": key})
+        self.logger.debug("Cache set", extra={"key": key})
 
 
-class APIService(LoggingMixin):
+class APIService:
     """API operations - standard logging."""
 
+    def __init__(self):
+        self.logger = Logger.get_logger(f"{__name__}.APIService")
+
     def handle_request(self, endpoint: str) -> dict:
-        self.log.info("Handling request", extra={"endpoint": endpoint})
+        self.logger.info("Handling request", extra={"endpoint": endpoint})
         return {"status": "ok"}
 
 
 if __name__ == "__main__":
-    """
-    In production, you can filter logs by logger name:
-    - Only see DatabaseService logs: filter by "examples.03_logger_isolation.DatabaseService"
-    - Only see errors: filter by level
-    - Track specific service: filter by logger name pattern
-    """
     db = DatabaseService()
     cache = CacheService()
     api = APIService()
 
-    # All services log simultaneously
-    # Each log line shows which class/service it came from
     db.query("SELECT * FROM users")
     cache.get("user:123")
     api.handle_request("/api/users")

@@ -11,7 +11,7 @@ a single function.
 from ds_common_logger_py_lib import Logger
 
 
-Logger()
+Logger.configure()
 logger = Logger.get_logger(__name__)
 
 
