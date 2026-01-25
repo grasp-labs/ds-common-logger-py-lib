@@ -452,6 +452,8 @@ class Logger:
             ExtraFieldsFormatter instance with current configuration.
         """
         format_string = Logger._format_string or Logger.DEFAULT_FORMAT
+        if format_string == Logger.DEFAULT_FORMAT_WITH_PREFIX and not Logger._prefix:
+            format_string = Logger.DEFAULT_FORMAT
         date_format = Logger._date_format or Logger.DEFAULT_DATE_FORMAT
 
         template_vars: dict[str, str] = {"prefix": Logger._prefix}
