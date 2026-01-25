@@ -15,8 +15,7 @@ import unittest
 from unittest import TestCase
 from unittest.mock import patch
 
-from ds_common_logger_py_lib import LoggerConfig
-from ds_common_logger_py_lib.config import LoggerFilter
+from ds_common_logger_py_lib import Logger, LoggerFilter
 from ds_common_logger_py_lib.formatter import ExtraFieldsFormatter
 
 
@@ -25,9 +24,10 @@ class TestFormatter(TestCase):
 
     def setUp(self) -> None:
         """Set up test fixtures."""
-        LoggerConfig._configured = False
-        LoggerConfig._filter = LoggerFilter(allowed_prefixes=None)
-        LoggerConfig._library_loggers.clear()
+        Logger._configured = False
+        Logger._filter = LoggerFilter(allowed_prefixes=None)
+        Logger._managed_loggers.clear()
+        Logger._logger_levels = {}
 
         root_logger = logging.getLogger()
         root_logger.handlers.clear()
@@ -255,6 +255,121 @@ class TestFormatter(TestCase):
         # Test with valid % format that includes template var after resolution
         resolved = formatter._resolve_template("%(message)s")
         self.assertEqual(resolved, "%(message)s")
+
+    def test_resolve_template_removes_empty_brackets_and_leading_space(self) -> None:
+        """Test _resolve_template() removes empty brackets and leading space."""
+        formatter = ExtraFieldsFormatter(
+            fmt="[] %(message)s",
+            template_vars={"prefix": ""},
+        )
+        resolved = formatter._resolve_template("[] %(message)s")
+        # Should remove [] and the space after it
+        self.assertEqual(resolved, "%(message)s")
+
+    def test_resolve_template_removes_leading_space_after_empty_brackets(self) -> None:
+        """Test _resolve_template() removes leading space when format starts with empty brackets."""
+        formatter = ExtraFieldsFormatter(
+            fmt="[] %(levelname)s: %(message)s",
+            template_vars={"prefix": ""},
+        )
+        resolved = formatter._resolve_template("[] %(levelname)s: %(message)s")
+        # Should remove [] and the leading space
+        self.assertEqual(resolved, "%(levelname)s: %(message)s")
+
+    def test_resolve_template_removes_leading_space_after_bracket_removal(self) -> None:
+        """Test _resolve_template() removes leading space after bracket removal."""
+        # Create a format with space before empty brackets - after removing [], space remains
+        formatter = ExtraFieldsFormatter(
+            fmt=" [] %(message)s",
+            template_vars={"prefix": ""},
+        )
+        # When prefix is empty, {prefix} becomes "", and [] gets removed, leaving " %(message)s"
+        # The regex removes [] and space after it, but space before [] remains
+        # Then line 189 removes the leading space
+        resolved = formatter._resolve_template(" [] %(message)s")
+        self.assertEqual(resolved, "%(message)s")
+
+    # ========================================================================
+    # LoggerFilter Tests
+    # ========================================================================
+
+    def test_logger_filter_allows_managed_loggers(self) -> None:
+        """Test LoggerFilter allows loggers in managed_loggers set."""
+        managed_loggers = {"myapp.module", "myapp.service"}
+        filter_obj = LoggerFilter(managed_loggers=managed_loggers)
+
+        record1 = logging.LogRecord("myapp.module", logging.INFO, "test.py", 1, "Test", (), None)
+        record2 = logging.LogRecord("myapp.service", logging.INFO, "test.py", 1, "Test", (), None)
+        record3 = logging.LogRecord("other.logger", logging.INFO, "test.py", 1, "Test", (), None)
+
+        self.assertTrue(filter_obj.filter(record1))
+        self.assertTrue(filter_obj.filter(record2))
+        # Without allowed_prefixes, other loggers should be filtered out
+        self.assertFalse(filter_obj.filter(record3))
+
+    def test_logger_filter_with_allowed_prefixes(self) -> None:
+        """Test LoggerFilter with allowed_prefixes."""
+        managed_loggers = {"myapp.module"}
+        allowed_prefixes = {"sqlalchemy", "boto3"}
+        filter_obj = LoggerFilter(
+            allowed_prefixes=allowed_prefixes,
+            managed_loggers=managed_loggers,
+        )
+
+        # Library loggers should always be allowed
+        record1 = logging.LogRecord("myapp.module", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertTrue(filter_obj.filter(record1))
+
+        # Loggers matching allowed prefixes should be allowed
+        record2 = logging.LogRecord("sqlalchemy.engine", logging.INFO, "test.py", 1, "Test", (), None)
+        record3 = logging.LogRecord("boto3", logging.INFO, "test.py", 1, "Test", (), None)
+        record4 = logging.LogRecord("boto3.client", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertTrue(filter_obj.filter(record2))
+        self.assertTrue(filter_obj.filter(record3))
+        self.assertTrue(filter_obj.filter(record4))
+
+        # Other loggers should be filtered out
+        record5 = logging.LogRecord("other.logger", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertFalse(filter_obj.filter(record5))
+
+    def test_logger_filter_with_none_allowed_prefixes(self) -> None:
+        """Test LoggerFilter with None allowed_prefixes."""
+        managed_loggers = {"myapp.module"}
+        filter_obj = LoggerFilter(allowed_prefixes=None, managed_loggers=managed_loggers)
+
+        # Only library loggers should be allowed
+        record1 = logging.LogRecord("myapp.module", logging.INFO, "test.py", 1, "Test", (), None)
+        record2 = logging.LogRecord("sqlalchemy.engine", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertTrue(filter_obj.filter(record1))
+        self.assertFalse(filter_obj.filter(record2))
+
+    def test_logger_filter_with_empty_allowed_prefixes(self) -> None:
+        """Test LoggerFilter with empty allowed_prefixes set."""
+        managed_loggers = {"myapp.module"}
+        filter_obj = LoggerFilter(allowed_prefixes=set(), managed_loggers=managed_loggers)
+
+        # Only library loggers should be allowed
+        record1 = logging.LogRecord("myapp.module", logging.INFO, "test.py", 1, "Test", (), None)
+        record2 = logging.LogRecord("sqlalchemy.engine", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertTrue(filter_obj.filter(record1))
+        self.assertFalse(filter_obj.filter(record2))
+
+    def test_logger_filter_prefix_matching(self) -> None:
+        """Test LoggerFilter prefix matching logic."""
+        allowed_prefixes = {"myapp"}
+        filter_obj = LoggerFilter(allowed_prefixes=allowed_prefixes, managed_loggers=set())
+
+        # Exact match
+        record1 = logging.LogRecord("myapp", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertTrue(filter_obj.filter(record1))
+
+        # Starts with prefix
+        record2 = logging.LogRecord("myapp.module", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertTrue(filter_obj.filter(record2))
+
+        # Doesn't match
+        record3 = logging.LogRecord("other", logging.INFO, "test.py", 1, "Test", (), None)
+        self.assertFalse(filter_obj.filter(record3))
 
 
 if __name__ == "__main__":
