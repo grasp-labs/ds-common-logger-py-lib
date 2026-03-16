@@ -20,7 +20,7 @@ from ds_common_logger_py_lib import Logger
 
 Logger.configure(
     prefix="MyApp",
-    format_string="[%(asctime)s][{prefix}][%(name)s][%(levelname)s]: %(message)s",
+    format_string="[%(levelname)s][%(asctime)s][{prefix}][%(name)s][%(filename)s:%(lineno)d]: %(message)s",
     date_format="%Y-%m-%d %H:%M:%S",
     level=logging.INFO,
     logger_levels={
