@@ -19,7 +19,7 @@ from ds_common_logger_py_lib import Logger
 
 Logger.configure(
     prefix="OrderService",
-    format_string="[%(asctime)s][%(levelname)s][{prefix}][%(name)s][%(filename)s:%(lineno)d]: %(message)s",
+    format_string="[%(asctime)s][%(levelname)s][{prefix}][%(name)s]: %(message)s",
     date_format="%Y-%m-%d %H:%M:%S",
     level=logging.INFO,
 )
