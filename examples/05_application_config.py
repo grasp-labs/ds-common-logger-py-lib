@@ -20,7 +20,7 @@ from ds_common_logger_py_lib import Logger
 
 Logger.configure(
     prefix="MyApp",
-    format_string="[%(asctime)s][{prefix}][%(name)s][%(levelname)s]: %(message)s",
+    format_string="[%(asctime)s][%(levelname)s][{prefix}][%(name)s]: %(message)s",
     date_format="%Y-%m-%d %H:%M:%S",
     level=logging.INFO,
     logger_levels={
@@ -81,7 +81,7 @@ def main() -> None:
 
     Logger.set_prefix("MyApp-v2")
     Logger.configure(
-        format_string="[{prefix}] %(levelname)s: %(message)s",
+        format_string="[{prefix}] %(asctime)s %(levelname)s: %(message)s",
         force=True,
     )
 
@@ -90,7 +90,7 @@ def main() -> None:
 
     Logger.configure(
         prefix="MyApp",
-        format_string="[%(asctime)s][{prefix}][%(name)s][%(levelname)s]: %(message)s",
+        format_string="[%(asctime)s][%(levelname)s][{prefix}][%(name)s]: %(message)s",
         force=True,
     )
 

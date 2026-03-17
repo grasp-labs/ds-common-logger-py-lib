@@ -54,8 +54,8 @@ class Logger:
         >>> Logger.configure(level=logging.DEBUG, force=True)
     """
 
-    DEFAULT_FORMAT = "[%(asctime)s][%(name)s][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s"
-    DEFAULT_FORMAT_WITH_PREFIX = "[%(asctime)s][{prefix}][%(name)s][%(levelname)s][%(filename)s:%(lineno)d]: %(message)s"
+    DEFAULT_FORMAT = "[%(asctime)s][%(levelname)s][%(name)s][%(filename)s:%(lineno)d]: %(message)s"
+    DEFAULT_FORMAT_WITH_PREFIX = "[%(asctime)s][%(levelname)s][{prefix}][%(name)s][%(filename)s:%(lineno)d]: %(message)s"
     DEFAULT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
     _configured: bool = False
