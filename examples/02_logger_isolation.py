@@ -15,7 +15,7 @@ from ds_common_logger_py_lib import Logger
 
 Logger.configure(
     level=logging.DEBUG,
-    format_string="[%(levelname)s][%(asctime)s][{prefix}][%(name)s][%(filename)s:%(lineno)d]: %(message)s",
+    format_string="[%(asctime)s][%(levelname)s][{prefix}][%(name)s][%(filename)s:%(lineno)d]: %(message)s",
     date_format="%Y-%m-%dT%H:%M:%S",
 )
 
